@@ -1,12 +1,29 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Railway automáticamente proporciona variables de PostgreSQL
-// Usar variables individuales en lugar de DATABASE_URL
+// Railway proporciona variables de PostgreSQL
 const buildConnectionString = () => {
-  // Preferir DATABASE_URL si existe
+  // Intentar usar DATABASE_PUBLIC_URL primero (URL pública)
+  if (process.env.DATABASE_PUBLIC_URL) {
+    let url = process.env.DATABASE_PUBLIC_URL;
+    if (url.startsWith('postgresql://')) {
+      url = url.replace('postgresql://', 'postgres://');
+    }
+    return url;
+  }
+  
+  // Si no existe, intentar con DATABASE_URL pero verificar el host
   if (process.env.DATABASE_URL) {
     let url = process.env.DATABASE_URL;
+    
+    // Si usa .railway.internal, intentar cambiarlo
+    if (url.includes('.railway.internal')) {
+      console.log('⚠️ URL usa .railway.internal, intentando cambiar...');
+      // Necesitamos usar DATABASE_PUBLIC_URL en su lugar
+      // Por ahora, retornar null para que intente con variables individuales
+      return null;
+    }
+    
     if (url.startsWith('postgresql://')) {
       url = url.replace('postgresql://', 'postgres://');
     }
@@ -19,7 +36,7 @@ const buildConnectionString = () => {
   const user = process.env.PGUSER;
   const password = process.env.PGPASSWORD;
   const database = process.env.PGDATABASE;
-  
+
   if (host && port && user && password && database) {
     return `postgres://${user}:${password}@${host}:${port}/${database}`;
   }
