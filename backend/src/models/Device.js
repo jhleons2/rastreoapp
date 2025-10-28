@@ -36,3 +36,4 @@ const Device = sequelize.define('Device', {
 
 module.exports = Device;
 
+

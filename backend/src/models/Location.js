@@ -47,3 +47,4 @@ const Location = sequelize.define('Location', {
 
 module.exports = Location;
 
+

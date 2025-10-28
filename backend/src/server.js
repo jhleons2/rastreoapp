@@ -146,10 +146,13 @@ const startServer = async () => {
         .catch((err) => {
           console.log('⚠️ Base de datos no conectada');
           console.log('❌ Error:', err.message);
-          console.log('📋 Stack:', err.stack);
-          if (!process.env.DATABASE_URL) {
-            console.log('⚠️ Variable DATABASE_URL no está configurada');
-          }
+          console.log('📋 Variables disponibles:');
+          console.log('   DATABASE_URL:', process.env.DATABASE_URL ? 'Sí' : 'No');
+          console.log('   PGHOST:', process.env.PGHOST || 'No');
+          console.log('   PGPORT:', process.env.PGPORT || 'No');
+          console.log('   PGUSER:', process.env.PGUSER || 'No');
+          console.log('   PGPASSWORD:', process.env.PGPASSWORD ? 'Sí' : 'No');
+          console.log('   PGDATABASE:', process.env.PGDATABASE || 'No');
         });
     });
     
