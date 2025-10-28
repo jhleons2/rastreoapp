@@ -92,8 +92,32 @@ export default function TrackingMethods() {
       if (response.ok) {
         // Obtener info del dispositivo
         const device = devices.find(d => d.id === selectedDevice)
+        console.log('Device data:', device)
+        console.log('All devices:', devices)
+        
         const deviceName = device?.device_name || 'Dispositivo'
         const phoneNumber = device?.phone_number || ''
+        
+        // Si no hay número de teléfono, pedirlo al usuario
+        if (!phoneNumber) {
+          const customNumber = prompt('Ingresa el número de teléfono al que enviar el link:\nEjemplo: 3143568097')
+          if (!customNumber) {
+            toast.error('Se necesita un número de teléfono')
+            return
+          }
+          
+          const whatsappNumber = customNumber.replace(/[^0-9]/g, '')
+          const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
+            `Hola, necesito conocer tu ubicación actual.\n\n` +
+            `Por favor, haz clic en el siguiente link para compartirla:\n${data.shareLink}\n\n` +
+            `Este link expira en 1 hora.\n\n` +
+            `Rastreo App`;
+          
+          const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`
+          window.open(whatsappUrl, '_blank')
+          toast.success('Abriendo WhatsApp con el link...')
+          return
+        }
         
         const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
           `Hola, necesito conocer tu ubicación actual.\n\n` +
@@ -103,7 +127,9 @@ export default function TrackingMethods() {
         
         // Formar número de teléfono para WhatsApp
         const whatsappNumber = phoneNumber.replace(/[^0-9]/g, '')
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+        const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`
+        
+        console.log('Sending to WhatsApp:', whatsappNumber)
         
         window.open(whatsappUrl, '_blank')
         toast.success('Abriendo WhatsApp con el link...')
@@ -151,10 +177,27 @@ export default function TrackingMethods() {
         >
           {devices.map(device => (
             <option key={device.id} value={device.id}>
-              {device.device_name} - {device.device_type}
+              {device.device_name} - {device.device_type} {device.phone_number ? `(${device.phone_number})` : ''}
             </option>
           ))}
         </select>
+        
+        {/* Mostrar número de teléfono del dispositivo seleccionado */}
+        {selectedDevice && devices.find(d => d.id === selectedDevice)?.phone_number && (
+          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-700">
+              📱 Número de contacto: <strong>{devices.find(d => d.id === selectedDevice)?.phone_number}</strong>
+            </p>
+          </div>
+        )}
+        
+        {selectedDevice && !devices.find(d => d.id === selectedDevice)?.phone_number && (
+          <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
+            <p className="text-sm text-yellow-700">
+              ⚠️ Este dispositivo no tiene número de teléfono asociado. Se te pedirá ingresarlo.
+            </p>
+          </div>
+        )}
         
         <button
           onClick={fetchCurrentLocation}
