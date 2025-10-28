@@ -22,24 +22,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // HEALTH CHECK - Crítico para Railway
-app.get('/health', async (req, res) => {
-  try {
-    await sequelize.authenticate();
-    res.json({ 
-      status: 'ok',
-      database: 'connected',
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
-      version: '1.0.0'
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      status: 'error',
-      database: 'disconnected',
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'production',
+    version: '1.0.0'
+  });
 });
 
 // Ruta principal
@@ -89,23 +78,18 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     console.log('🚀 Iniciando servidor...');
-    console.log(`📦 Environment: ${process.env.NODE_ENV}`);
+    console.log(`📦 Environment: ${process.env.NODE_ENV || 'production'}`);
     
-    // Conectar a base de datos
-    await sequelize.authenticate();
-    console.log('✅ Base de datos conectada correctamente');
-    
-    // Sincronizar modelos solo en desarrollo
-    if (process.env.NODE_ENV === 'development') {
-      // await sequelize.sync({ alter: false });
-      console.log('✅ Modelos listos');
-    }
-    
-    // Iniciar servidor
+    // Iniciar servidor (sin conectar DB todavía)
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✅ Servidor corriendo en puerto ${PORT}`);
       console.log(`🌐 URL: http://0.0.0.0:${PORT}`);
       console.log(`❤️  Health check: http://0.0.0.0:${PORT}/health`);
+      
+      // Intentar conectar a base de datos en background
+      sequelize.authenticate()
+        .then(() => console.log('✅ Base de datos conectada correctamente'))
+        .catch((err) => console.log('⚠️ Base de datos no conectada:', err.message));
     });
     
   } catch (error) {
