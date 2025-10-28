@@ -297,7 +297,7 @@ export default function TrackingMethods() {
               <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
                 <li>Busca el bot en Telegram</li>
                 <li>Envía: <code className="bg-cyan-200 px-2 py-1 rounded">/start</code></li>
-                <li>Vincular: <code className="bg-cyan-200 px-2 py-1 rounded">/link +573001234567</code></li>
+                <li>Vincular: <code className="bg-cyan-200 px-2 py-1 rounded">/link {selectedDevice && devices.find(d => d.id === selectedDevice)?.phone_number || '+573001234567'}</code></li>
                 <li>Solicitar ubicación: <code className="bg-cyan-200 px-2 py-1 rounded">/location</code></li>
                 <li>Envía tu ubicación usando el botón de Telegram</li>
               </ol>
