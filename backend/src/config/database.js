@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 // Railway automáticamente proporciona DATABASE_URL cuando agregas PostgreSQL
@@ -6,24 +6,25 @@ let databaseUrl = process.env.DATABASE_URL ||
   `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`;
 
 // Convertir postgresql:// a postgres:// si es necesario
-databaseUrl = databaseUrl.replace('postgresql://', 'postgres://');
+if (databaseUrl && databaseUrl.startsWith('postgresql://')) {
+  databaseUrl = databaseUrl.replace('postgresql://', 'postgres://');
+}
 
 console.log('📊 Configurando conexión a base de datos...');
-console.log('🔗 URL:', databaseUrl.replace(/:[^:@]+@/, ':****@')); // Ocultar password
+if (databaseUrl) {
+  console.log('🔗 URL:', databaseUrl.replace(/:[^:@]+@/, ':****@')); // Ocultar password
+} else {
+  console.log('⚠️ DATABASE_URL no configurada');
+}
 
 // Configuración de Sequelize con manejo de errores
-const sequelize = new Sequelize(databaseUrl, {
+const sequelize = new Sequelize(databaseUrl || 'postgres://localhost/temp', {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
-    ssl: false, // Deshabilitar SSL para Railway internal
-    connectTimeout: 30000
+    ssl: false
   },
-  logging: (msg) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(msg);
-    }
-  },
+  logging: false,
   pool: {
     max: 5,
     min: 0,

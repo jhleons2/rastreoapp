@@ -4,7 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
 
-// const sequelize = require('./config/database'); // Comentado temporalmente
+const sequelize = require('./config/database');
+const { User, Device, Location } = require('./models');
 
 const app = express();
 
@@ -28,13 +29,25 @@ app.use((req, res, next) => {
 });
 
 // HEALTH CHECK - Crítico para Railway
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production',
-    version: '1.0.0'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.json({ 
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'production',
+      version: '1.0.0'
+    });
+  } catch (error) {
+    res.json({ 
+      status: 'ok',
+      database: 'disconnected',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'production',
+      version: '1.0.0'
+    });
+  }
 });
 
 // Ruta principal
@@ -97,16 +110,26 @@ const startServer = async () => {
     console.log('🚀 Iniciando servidor...');
     console.log(`📦 Environment: ${process.env.NODE_ENV || 'production'}`);
     
-    // Iniciar servidor (sin conectar DB todavía)
+    // Iniciar servidor
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✅ Servidor corriendo en puerto ${PORT}`);
       console.log(`🌐 URL: http://0.0.0.0:${PORT}`);
       console.log(`❤️  Health check: http://0.0.0.0:${PORT}/health`);
       
-      // Intentar conectar a base de datos en background (comentado temporalmente)
-      // sequelize.authenticate()
-      //   .then(() => console.log('✅ Base de datos conectada correctamente'))
-      //   .catch((err) => console.log('⚠️ Base de datos no conectada:', err.message));
+      // Intentar conectar a base de datos en background
+      sequelize.authenticate()
+        .then(() => {
+          console.log('✅ Base de datos conectada correctamente');
+          // Sincronizar modelos si es necesario
+          if (process.env.NODE_ENV === 'development') {
+            sequelize.sync({ alter: false }).then(() => {
+              console.log('✅ Modelos sincronizados');
+            });
+          }
+        })
+        .catch((err) => {
+          console.log('⚠️ Base de datos no conectada:', err.message);
+        });
     });
     
   } catch (error) {
@@ -118,13 +141,13 @@ const startServer = async () => {
 // Manejo graceful de señales
 process.on('SIGTERM', async () => {
   console.log('⚠️ SIGTERM recibido, cerrando conexiones...');
-  // await sequelize.close(); // Comentado temporalmente
+  await sequelize.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('⚠️ SIGINT recibido, cerrando conexiones...');
-  // await sequelize.close(); // Comentado temporalmente
+  await sequelize.close();
   process.exit(0);
 });
 
