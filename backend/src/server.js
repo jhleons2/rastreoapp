@@ -58,12 +58,18 @@ app.get('/', (req, res) => {
 
 // Placeholder para futuras rutas
 app.get('/api', (req, res) => {
+  console.log('📡 Ruta /api accedida');
   res.json({
     message: 'API endpoints',
     auth: '/api/auth',
     devices: '/api/devices',
     locations: '/api/locations'
   });
+});
+
+// Test route para debug
+app.get('/test', (req, res) => {
+  res.json({ message: 'Test route funciona' });
 });
 
 // 404 Handler
