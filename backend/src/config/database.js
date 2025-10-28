@@ -2,8 +2,11 @@ const Sequelize = require('sequelize');
 require('dotenv').config();
 
 // Railway automáticamente proporciona DATABASE_URL cuando agregas PostgreSQL
-const databaseUrl = process.env.DATABASE_URL || 
+let databaseUrl = process.env.DATABASE_URL || 
   `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`;
+
+// Convertir postgresql:// a postgres:// si es necesario
+databaseUrl = databaseUrl.replace('postgresql://', 'postgres://');
 
 console.log('📊 Configurando conexión a base de datos...');
 
