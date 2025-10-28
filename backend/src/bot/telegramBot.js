@@ -9,6 +9,7 @@ const axios = require('axios');
 class TelegramBotService {
   constructor() {
     this.bot = null;
+    this.ready = false;
     this.userSessions = new Map(); // Almacenar sesiones de usuarios
   }
 
@@ -23,6 +24,14 @@ class TelegramBotService {
 
     try {
       this.bot = new TelegramBot(token, { polling: true });
+      
+      // Marcar como listo
+      this.bot.on('polling_error', (error) => {
+        console.error('[Telegram Bot] Polling error:', error);
+      });
+      
+      this.ready = true;
+      console.log('[Telegram Bot] Bot initialized and ready!');
       
       this.bot.onText(/\/start/, (msg) => {
         const chatId = msg.chat.id;
@@ -139,10 +148,9 @@ class TelegramBotService {
           );
         }
       });
-
-      console.log('[Telegram Bot] Bot initialized successfully');
     } catch (error) {
       console.error('[Telegram Bot] Error initializing:', error);
+      this.ready = false;
     }
   }
 
@@ -160,6 +168,13 @@ class TelegramBotService {
   }
 
   /**
+   * Verificar si el bot está listo
+   */
+  isReady() {
+    return this.ready && this.bot !== null;
+  }
+
+  /**
    * Enviar notificación a un usuario
    */
   async sendNotification(chatId, message) {
@@ -170,6 +185,29 @@ class TelegramBotService {
       return true;
     } catch (error) {
       console.error('[Telegram Bot] Error sending notification:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Solicitar ubicación a un chat
+   */
+  async requestLocation(chatId, customMessage) {
+    if (!this.ready) return false;
+    
+    const message = customMessage || 'Por favor, comparte tu ubicación actual.';
+    
+    try {
+      await this.bot.sendMessage(chatId, message, {
+        reply_markup: {
+          keyboard: [[{ text: '📍 Compartir ubicación', request_location: true }]],
+          resize_keyboard: true,
+          one_time_keyboard: true
+        }
+      });
+      return true;
+    } catch (error) {
+      console.error('[Telegram Bot] Error requesting location:', error);
       return false;
     }
   }
