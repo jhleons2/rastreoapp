@@ -1,5 +1,6 @@
 const { Location, Device } = require('../models');
 const { Op } = require('sequelize');
+const { reverseGeocode } = require('../utils/geocoding');
 
 exports.createLocation = async (req, res) => {
   try {
@@ -20,8 +21,16 @@ exports.createLocation = async (req, res) => {
       return res.status(404).json({ error: 'Device not found' });
     }
 
+    // Obtener dirección mediante geocodificación inversa
+    let addressData = null;
+    try {
+      addressData = await reverseGeocode(latitude, longitude);
+    } catch (error) {
+      console.error('Error in reverse geocoding:', error.message);
+    }
+
     // Crear ubicación
-    const location = await Location.create({
+    const locationData = {
       device_id,
       latitude,
       longitude,
@@ -30,7 +39,16 @@ exports.createLocation = async (req, res) => {
       speed: speed || null,
       heading: heading || null,
       timestamp: new Date()
-    });
+    };
+
+    // Agregar información de dirección si está disponible
+    if (addressData && addressData.address) {
+      locationData.address = addressData.address;
+      locationData.formatted_address = `${addressData.address_components.road || ''} ${addressData.address_components.house_number || ''}`.trim();
+      locationData.address_components = addressData.address_components;
+    }
+
+    const location = await Location.create(locationData);
 
     // Actualizar last_seen del dispositivo
     await device.update({ last_seen: new Date() });

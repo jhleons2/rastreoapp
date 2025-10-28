@@ -116,6 +116,7 @@ app.get('/debug', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/devices', require('./routes/devices'));
 app.use('/api/locations', require('./routes/locations'));
+app.use('/api/geofences', require('./routes/geofences'));
 
 // 404 Handler
 app.use((req, res) => {
