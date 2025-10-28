@@ -9,15 +9,15 @@ let databaseUrl = process.env.DATABASE_URL ||
 databaseUrl = databaseUrl.replace('postgresql://', 'postgres://');
 
 console.log('📊 Configurando conexión a base de datos...');
+console.log('🔗 URL:', databaseUrl.replace(/:[^:@]+@/, ':****@')); // Ocultar password
 
+// Configuración de Sequelize con manejo de errores
 const sequelize = new Sequelize(databaseUrl, {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
-    ssl: process.env.DATABASE_URL ? {
-      require: true,
-      rejectUnauthorized: false
-    } : false
+    ssl: false, // Deshabilitar SSL para Railway internal
+    connectTimeout: 30000
   },
   logging: (msg) => {
     if (process.env.NODE_ENV === 'development') {
@@ -29,6 +29,9 @@ const sequelize = new Sequelize(databaseUrl, {
     min: 0,
     acquire: 30000,
     idle: 10000
+  },
+  retry: {
+    max: 3
   }
 });
 
