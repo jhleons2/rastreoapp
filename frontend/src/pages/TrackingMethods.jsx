@@ -31,6 +31,7 @@ export default function TrackingMethods() {
 
       if (response.ok) {
         const data = await response.json()
+        console.log('Dispositivos obtenidos del backend:', data)
         setDevices(data)
         if (data.length > 0 && !selectedDevice) {
           setSelectedDevice(data[0].id)
@@ -90,37 +91,45 @@ export default function TrackingMethods() {
       const data = await response.json()
 
       if (response.ok) {
-        // Obtener info del dispositivo
+        // Obtener info del dispositivo seleccionado
         const device = devices.find(d => d.id === selectedDevice)
-        console.log('Device data:', device)
-        console.log('All devices:', devices)
+        console.log('=== DISPOSITIVO SELECCIONADO ===')
+        console.log('Selected Device ID:', selectedDevice)
+        console.log('Device Data:', device)
+        console.log('All Devices:', devices)
+        console.log('================================')
         
         const deviceName = device?.device_name || 'Dispositivo'
         const phoneNumber = device?.phone_number || ''
         
+        console.log('Número de teléfono encontrado:', phoneNumber)
+        
         // Si no hay número de teléfono, pedirlo al usuario
         if (!phoneNumber) {
-          const customNumber = prompt('Ingresa el número de teléfono al que enviar el link:\nEjemplo: 3143568097')
+          const customNumber = prompt('Este dispositivo no tiene número de teléfono asociado.\n\nIngresa el número al que enviar el link:\nEjemplo: 3143568097')
           if (!customNumber) {
             toast.error('Se necesita un número de teléfono')
             return
           }
           
           const whatsappNumber = customNumber.replace(/[^0-9]/g, '')
+          console.log('Usando número personalizado:', whatsappNumber)
+          
           const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
-            `Hola, necesito conocer tu ubicación actual.\n\n` +
+            `Hola, necesito conocer tu ubicación actual para el dispositivo: ${deviceName}\n\n` +
             `Por favor, haz clic en el siguiente link para compartirla:\n${data.shareLink}\n\n` +
             `Este link expira en 1 hora.\n\n` +
             `Rastreo App`;
           
           const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`
+          console.log('WhatsApp URL:', whatsappUrl)
           window.open(whatsappUrl, '_blank')
-          toast.success('Abriendo WhatsApp con el link...')
+          toast.success(`Abriendo WhatsApp para 57${whatsappNumber}...`)
           return
         }
         
         const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
-          `Hola, necesito conocer tu ubicación actual.\n\n` +
+          `Hola, necesito conocer tu ubicación actual para el dispositivo: ${deviceName}\n\n` +
           `Por favor, haz clic en el siguiente link para compartirla:\n${data.shareLink}\n\n` +
           `Este link expira en 1 hora.\n\n` +
           `Rastreo App`;
@@ -129,10 +138,11 @@ export default function TrackingMethods() {
         const whatsappNumber = phoneNumber.replace(/[^0-9]/g, '')
         const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`
         
-        console.log('Sending to WhatsApp:', whatsappNumber)
+        console.log('Enviando a número de WhatsApp:', whatsappNumber)
+        console.log('URL:', whatsappUrl)
         
+        toast.success(`Enviando link a +57${whatsappNumber}...`)
         window.open(whatsappUrl, '_blank')
-        toast.success('Abriendo WhatsApp con el link...')
       } else {
         toast.error(data.error || 'Error al generar link')
       }
@@ -175,11 +185,14 @@ export default function TrackingMethods() {
           onChange={(e) => setSelectedDevice(Number(e.target.value))}
           className="input-field"
         >
-          {devices.map(device => (
-            <option key={device.id} value={device.id}>
-              {device.device_name} - {device.device_type} {device.phone_number ? `(${device.phone_number})` : ''}
-            </option>
-          ))}
+          {devices.map(device => {
+            const devicePhone = device?.phone_number || 'Sin número'
+            return (
+              <option key={device.id} value={device.id}>
+                {device.device_name} - {device.device_type} ({devicePhone})
+              </option>
+            )
+          })}
         </select>
         
         {/* Mostrar número de teléfono del dispositivo seleccionado */}
