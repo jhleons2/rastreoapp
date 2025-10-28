@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-
-const Location = sequelize.define('Location', {
+module.exports = (sequelize) => {
+  const { DataTypes } = require('sequelize');
+  
+  const Location = sequelize.define('Location', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -41,10 +41,11 @@ const Location = sequelize.define('Location', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'locations',
-  timestamps: false
-});
+    tableName: 'locations',
+    timestamps: false
+  });
 
-module.exports = Location;
+  return Location;
+};
 
 

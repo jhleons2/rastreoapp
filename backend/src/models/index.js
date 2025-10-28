@@ -1,6 +1,9 @@
-const User = require('./User');
-const Device = require('./Device');
-const Location = require('./Location');
+const sequelize = require('../config/database');
+
+// Importar modelos
+const User = require('./User')(sequelize);
+const Device = require('./Device')(sequelize);
+const Location = require('./Location')(sequelize);
 
 // Definir relaciones
 User.hasMany(Device, { foreignKey: 'user_id', as: 'devices' });

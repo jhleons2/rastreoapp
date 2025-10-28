@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-
-const Device = sequelize.define('Device', {
+module.exports = (sequelize) => {
+  const { DataTypes } = require('sequelize');
+  
+  const Device = sequelize.define('Device', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -30,10 +30,11 @@ const Device = sequelize.define('Device', {
 }, {
   tableName: 'devices',
   timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-});
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
+  });
 
-module.exports = Device;
+  return Device;
+};
 
 

@@ -100,6 +100,11 @@ app.get('/debug', (req, res) => {
   });
 });
 
+// Importar y usar rutas de la API
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/devices', require('./routes/devices'));
+app.use('/api/locations', require('./routes/locations'));
+
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ 
@@ -136,12 +141,14 @@ const startServer = async () => {
         .then(() => {
           console.log('✅ Base de datos conectada correctamente');
           console.log('📊 URL de conexión:', process.env.DATABASE_URL ? 'Configurada' : 'No configurada');
-          // Sincronizar modelos si es necesario
-          if (process.env.NODE_ENV === 'development') {
-            sequelize.sync({ alter: false }).then(() => {
-              console.log('✅ Modelos sincronizados');
+          // Sincronizar modelos
+          sequelize.sync({ alter: false })
+            .then(() => {
+              console.log('✅ Modelos sincronizados (User, Device, Location)');
+            })
+            .catch(err => {
+              console.log('⚠️ Error sincronizando modelos:', err.message);
             });
-          }
         })
         .catch((err) => {
           console.log('⚠️ Base de datos no conectada');
