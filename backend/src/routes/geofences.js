@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const geofenceController = require('../controllers/geofenceController');
-const authenticate = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // Todas las rutas requieren autenticación
 router.use(authenticate);
