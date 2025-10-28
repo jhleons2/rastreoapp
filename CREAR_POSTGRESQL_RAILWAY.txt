@@ -1,0 +1,98 @@
+═══════════════════════════════════════════════════════════
+    🗄️ CÓMO CREAR POSTGRESQL EN RAILWAY (PASO A PASO)
+═══════════════════════════════════════════════════════════
+
+PASO 1: Ubicar el botón para agregar servicio
+───────────────────────────────────────────────────
+   1. En tu Dashboard de Railway
+   2. Busca el botón grande con "+" (plus)
+      Este botón puede estar:
+      - En la esquina superior derecha
+      - Al lado del servicio "rastreoapp"
+      - En la barra lateral
+
+PASO 2: Seleccionar Database
+──────────────────────────────
+   1. Click en el botón "+" o "New"
+   2. Aparecerá un menú con opciones:
+      ○ Empty Service
+      ○ GitHub Repo
+      ○ Database     ← CLICK AQUÍ
+      ○ Private Network
+
+PASO 3: Seleccionar PostgreSQL
+───────────────────────────────
+   1. Después de click en "Database"
+   2. Verás opciones:
+      ○ MySQL
+      ○ PostgreSQL    ← CLICK AQUÍ
+      ○ Redis
+      ○ MongoDB
+   
+   3. Click en "PostgreSQL"
+
+PASO 4: Esperar a que se cree
+───────────────────────────────
+   1. Railway comenzará a crear la base de datos
+   2. Verás un indicador de progreso
+   3. Espera 30-60 segundos
+   4. Aparecerá un nuevo servicio llamado "PostgreSQL"
+
+PASO 5: Conectar los servicios
+────────────────────────────────
+   1. Railway detectará automáticamente que tienes PostgreSQL
+   2. Configurará automáticamente las variables de conexión
+   3. Tu servicio "rastreoapp" podrá usarlas
+
+PASO 6: Redeploy
+──────────────────
+   1. Ve a "Deployments" de "rastreoapp"
+   2. Click en los 3 puntos (...)
+   3. Click en "Redeploy"
+   4. Espera 2-3 minutos
+
+═══════════════════════════════════════════════════════════
+
+DESPUÉS DE CREAR POSTGRESQL:
+
+✅ Verás 2 servicios en tu Dashboard:
+   - rastreoapp (tu backend)
+   - PostgreSQL (tu base de datos)
+
+✅ Variables automáticas que Railway creará:
+   - PGHOST
+   - PGPORT  
+   - PGUSER
+   - PGPASSWORD
+   - PGDATABASE
+
+✅ Tu backend podrá conectarse automáticamente
+
+═══════════════════════════════════════════════════════════
+
+DÓNDE ESTÁ EL BOTÓN "+" O "NEW":
+───────────────────────────────────
+
+Opción 1: En la vista principal (recomendado)
+   ┌─────────────────────────────────────┐
+   │  Railway Dashboard                    │
+   │  [+] New    (botón grande arriba)     │
+   └─────────────────────────────────────┘
+
+Opción 2: Al lado de tu servicio
+   ┌─────────────────────────────────────┐
+   │  rastreoapp    [PostgreSQL] [+ New]  │
+   └─────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════
+
+VERIFICACIÓN DESPUÉS DE CREAR:
+───────────────────────────────
+
+1. Ve a Logs de "rastreoapp"
+2. Deberías ver:
+   ✅ "Base de datos conectada correctamente"
+   ❌ NO deberías ver errores de pg-connection-string
+
+═══════════════════════════════════════════════════════════
+

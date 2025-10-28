@@ -1,0 +1,62 @@
+═══════════════════════════════════════════════════════════════
+    ✅ SOLUCIÓN: Variable Reference en Railway
+═══════════════════════════════════════════════════════════════
+
+HAS VISTO EL BANNER QUE DICE:
+"Trying to connect this database to a service? Add a Variable Reference"
+
+ESO ES EXACTAMENTE LO QUE DEBES HACER.
+
+═══════════════════════════════════════════════════════════════
+
+PASO 1: Click en "Variable Reference"
+─────────────────────────────────────
+   1. En la pantalla de PostgreSQL Variables que estás viendo
+   2. Arriba hay un banner morado/purple
+   3. Click en el link "Variable Reference"
+
+PASO 2: Aparecerá un cuadro para configurar
+──────────────────────────────────────────────
+   1. Selecciona el servicio de destino
+   2. En este caso: "rastreoapp"
+   3. Click en "Add Reference" o "Connect"
+
+Esto automáticamente hará que todas las variables de PostgreSQL
+estén disponibles en rastreoapp.
+
+═══════════════════════════════════════════════════════════════
+
+PASO 3: Redeploy rastreoapp
+─────────────────────────────
+   1. Ve a "rastreoapp" (panel izquierdo)
+   2. "Deployments"
+   3. "..."
+   4. "Redeploy"
+
+═══════════════════════════════════════════════════════════════
+
+VERIFICACIÓN:
+─────────────
+Después del redeploy, en Logs deberías ver:
+✅ "Base de datos conectada correctamente"
+
+═══════════════════════════════════════════════════════════════
+
+ALTERNATIVA: Si no puedes usar Variable Reference
+────────────────────────────────────────────────────────────────
+
+Configura estas variables MANUALMENTE en rastreoapp:
+
+1. Ve a rastreoapp → Variables
+2. Click en cada variable y "Reveal" el valor
+3. Agregar en rastreoapp:
+   - PGHOST
+   - PGPORT
+   - PGUSER
+   - PGPASSWORD
+   - PGDATABASE
+4. O más fácil, agrega solo:
+   - DATABASE_URL = postgresql://postgres:PASSWORD@HOST:PORT/DATABASE
+
+═══════════════════════════════════════════════════════════════
+
