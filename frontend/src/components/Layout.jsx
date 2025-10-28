@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Smartphone, MapPin, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Smartphone, MapPin, Navigation, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Layout({ children, onLogout }) {
@@ -10,6 +10,7 @@ export default function Layout({ children, onLogout }) {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/devices', icon: Smartphone, label: 'Dispositivos' },
     { path: '/locations', icon: MapPin, label: 'Ubicaciones' },
+    { path: '/tracking', icon: Navigation, label: 'Métodos de Rastreo' },
   ]
 
   return (

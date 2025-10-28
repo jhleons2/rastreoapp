@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Devices from './pages/Devices'
 import Locations from './pages/Locations'
+import TrackingMethods from './pages/TrackingMethods'
 import Layout from './components/Layout'
 import './styles/index.css'
 
@@ -40,6 +41,7 @@ function App() {
         <Route path="/dashboard" element={token ? <Layout onLogout={handleLogout}><Dashboard /></Layout> : <Navigate to="/login" />} />
         <Route path="/devices" element={token ? <Layout onLogout={handleLogout}><Devices /></Layout> : <Navigate to="/login" />} />
         <Route path="/locations" element={token ? <Layout onLogout={handleLogout}><Locations /></Layout> : <Navigate to="/login" />} />
+        <Route path="/tracking" element={token ? <Layout onLogout={handleLogout}><TrackingMethods /></Layout> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   )
