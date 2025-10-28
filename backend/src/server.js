@@ -85,6 +85,21 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Test route funciona' });
 });
 
+// Debug: verificar variables de entorno
+app.get('/debug', (req, res) => {
+  res.json({
+    database_url_set: !!process.env.DATABASE_URL,
+    database_url_length: process.env.DATABASE_URL?.length || 0,
+    node_env: process.env.NODE_ENV,
+    has_pg_vars: {
+      PGHOST: !!process.env.PGHOST,
+      PGPORT: !!process.env.PGPORT,
+      PGUSER: !!process.env.PGUSER,
+      PGDATABASE: !!process.env.PGDATABASE
+    }
+  });
+});
+
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ 
@@ -120,6 +135,7 @@ const startServer = async () => {
       sequelize.authenticate()
         .then(() => {
           console.log('✅ Base de datos conectada correctamente');
+          console.log('📊 URL de conexión:', process.env.DATABASE_URL ? 'Configurada' : 'No configurada');
           // Sincronizar modelos si es necesario
           if (process.env.NODE_ENV === 'development') {
             sequelize.sync({ alter: false }).then(() => {
@@ -128,7 +144,12 @@ const startServer = async () => {
           }
         })
         .catch((err) => {
-          console.log('⚠️ Base de datos no conectada:', err.message);
+          console.log('⚠️ Base de datos no conectada');
+          console.log('❌ Error:', err.message);
+          console.log('📋 Stack:', err.stack);
+          if (!process.env.DATABASE_URL) {
+            console.log('⚠️ Variable DATABASE_URL no está configurada');
+          }
         });
     });
     
