@@ -160,7 +160,6 @@ export default function Devices() {
               }`}>
                 {device.is_active ? 'Activo' : 'Inactivo'}
               </div>
-            </div>
               
               <div className="space-y-2 text-sm text-gray-600">
                 <p>Última vez: {device.last_seen 
