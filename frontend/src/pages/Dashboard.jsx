@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Smartphone, MapPin, Clock, Activity } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { Doughnut } from 'react-chartjs-2'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+
+// Registrar componentes de Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://rastreoapp-production.up.railway.app'
 
@@ -12,6 +17,8 @@ export default function Dashboard() {
     locations: 0,
     lastActivity: 'Nunca',
     systemStatus: 'Desconocido',
+    activeDevices: 0,
+    inactiveDevices: 0,
     loading: true
   })
 
@@ -69,11 +76,15 @@ export default function Dashboard() {
               ? 'Activo' 
               : `${activeDevices}/${devices.length} activos`
         
+        const inactiveDevices = devices.length - activeDevices
+        
         setStats({
           devices: devices.length || 0,
           locations: devices.reduce((acc, device) => acc + (device.location_count || 0), 0),
           lastActivity: lastActivityText,
           systemStatus: systemStatus,
+          activeDevices: activeDevices,
+          inactiveDevices: inactiveDevices,
           loading: false
         })
       }
@@ -132,6 +143,49 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Gráfico de Dispositivos */}
+      {stats.devices > 0 && !stats.loading && (
+        <div className="card mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Estado de Dispositivos</h2>
+          <div className="flex items-center justify-center">
+            <div style={{ width: '300px', height: '300px' }}>
+              <Doughnut
+                data={{
+                  labels: ['Activos', 'Inactivos'],
+                  datasets: [{
+                    label: 'Dispositivos',
+                    data: [stats.activeDevices, stats.inactiveDevices],
+                    backgroundColor: ['#22c55e', '#9ca3af'],
+                    borderColor: ['#16a34a', '#6b7280'],
+                    borderWidth: 2
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                    legend: {
+                      position: 'bottom'
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          const label = context.label || ''
+                          const value = context.parsed || 0
+                          const total = context.dataset.data.reduce((a, b) => a + b, 0)
+                          const percentage = ((value / total) * 100).toFixed(1)
+                          return `${label}: ${value} (${percentage}%)`
+                        }
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="card">
