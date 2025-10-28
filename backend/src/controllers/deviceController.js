@@ -24,7 +24,13 @@ exports.getDevices = async (req, res) => {
 
     console.log('[getDevices] Dispositivos encontrados:', {
       userId: req.user.id,
+      userPhone: req.user.phone_number,
       count: devicesWithPhone.length,
+      devices: devicesWithPhone.map(d => ({
+        id: d.id,
+        name: d.device_name,
+        phone: d.phone_number
+      })),
       timestamp: new Date().toISOString()
     });
 
