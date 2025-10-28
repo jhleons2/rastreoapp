@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react'
 import { MapPin, Smartphone, Calendar, Navigation } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import L from 'leaflet'
+
+// Fix para iconos de Leaflet en React
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+})
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://rastreoapp-production.up.railway.app'
 
@@ -150,25 +160,54 @@ export default function Locations() {
               </div>
             </div>
 
-            {/* Mapa placeholder - instrucciones para Leaflet */}
-            <div className="bg-gray-100 rounded-lg" style={{ height: '500px' }}>
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <MapPin className="w-20 h-20 text-blue-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Mapa de Ubicaciones</h3>
-                  <p className="text-gray-600 mb-4">
-                    {locations.length} ubicaciones encontradas para este dispositivo
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Para visualizar en un mapa interactivo, se requiere configurar una clave de API de mapas
-                    (Mapbox, Google Maps o Leaflet).
-                  </p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Primera ubicación: {locations[0]?.latitude}, {locations[0]?.longitude}
-                  </p>
-                </div>
+            {/* Mapa real con Leaflet */}
+            {locations.length > 0 && (
+              <div className="rounded-lg overflow-hidden border border-gray-200" style={{ height: '500px' }}>
+                <MapContainer
+                  center={[Number(locations[0].latitude), Number(locations[0].longitude)]}
+                  zoom={13}
+                  style={{ height: '100%', width: '100%' }}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  
+                  {/* Marcadores de ubicaciones */}
+                  {locations.map((location, index) => (
+                    <Marker 
+                      key={location.id || index}
+                      position={[Number(location.latitude), Number(location.longitude)]}
+                    >
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-bold">Ubicación #{locations.length - index}</p>
+                          <p className="text-gray-600 mt-1">
+                            {new Date(location.timestamp).toLocaleString('es-ES')}
+                          </p>
+                          {location.accuracy && (
+                            <p className="text-gray-500">
+                              Precisión: {location.accuracy}m
+                            </p>
+                          )}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                  
+                  {/* Línea conectando todas las ubicaciones */}
+                  {locations.length > 1 && (
+                    <Polyline
+                      positions={locations.map(loc => [Number(loc.latitude), Number(loc.longitude)])}
+                      color="blue"
+                      weight={3}
+                      opacity={0.7}
+                    />
+                  )}
+                </MapContainer>
               </div>
-            </div>
+            )}
 
             {/* Lista de ubicaciones */}
             <div className="mt-6">
