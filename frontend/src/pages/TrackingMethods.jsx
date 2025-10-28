@@ -9,6 +9,7 @@ export default function TrackingMethods() {
   const [selectedDevice, setSelectedDevice] = useState(null)
   const [currentLocation, setCurrentLocation] = useState(null)
   const [generatingLink, setGeneratingLink] = useState(false)
+  const [shareLink, setShareLink] = useState(null)
 
   useEffect(() => {
     fetchDevices()
@@ -69,6 +70,56 @@ export default function TrackingMethods() {
     }
   }
 
+  const shareViaTelegram = async () => {
+    if (!selectedDevice) {
+      toast.error('Selecciona un dispositivo')
+      return
+    }
+
+    setGeneratingLink(true)
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_URL}/api/share/generate-share-link`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ device_id: selectedDevice })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        const link = data.shareLink
+        setShareLink(link)
+        
+        // Obtener info del dispositivo
+        const device = devices.find(d => d.id === selectedDevice)
+        const deviceName = device?.device_name || 'Dispositivo'
+        
+        const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
+          `Hola, necesito conocer tu ubicación actual para el dispositivo: ${deviceName}\n\n` +
+          `Por favor, haz clic en el siguiente link para compartirla:\n${link}\n\n` +
+          `Este link expira en 1 hora.\n\n` +
+          `Rastreo App`;
+        
+        // Abrir Telegram (t.me)
+        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(message)}`
+        window.open(telegramUrl, '_blank')
+        toast.success('Abriendo Telegram con el link...')
+      } else {
+        toast.error(data.error || 'Error al generar link')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Error al generar link')
+    } finally {
+      setGeneratingLink(false)
+    }
+  }
+
   const shareViaWhatsApp = async () => {
     if (!selectedDevice) {
       toast.error('Selecciona un dispositivo')
@@ -91,12 +142,16 @@ export default function TrackingMethods() {
       const data = await response.json()
 
       if (response.ok) {
+        // Guardar el link para compartir
+        setShareLink(data.shareLink)
+        
         // Obtener info del dispositivo seleccionado
         const device = devices.find(d => d.id === selectedDevice)
         console.log('=== DISPOSITIVO SELECCIONADO ===')
         console.log('Selected Device ID:', selectedDevice)
         console.log('Device Data:', device)
         console.log('All Devices:', devices)
+        console.log('Share Link:', data.shareLink)
         console.log('================================')
         
         const deviceName = device?.device_name || 'Dispositivo'
@@ -311,6 +366,15 @@ export default function TrackingMethods() {
                 Rastreo Manual
               </span>
             </div>
+
+            <button
+              onClick={shareViaTelegram}
+              disabled={!selectedDevice || generatingLink}
+              className="mt-4 w-full btn-primary bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
+            >
+              <MessageCircle className="w-4 h-4 inline mr-2" />
+              {generatingLink ? 'Generando link...' : 'Generar Link y Compartir por Telegram'}
+            </button>
           </div>
         </div>
       </div>
