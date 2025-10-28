@@ -30,7 +30,10 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
       ]
     },
     "web": {
@@ -43,6 +46,11 @@
           "locationAlwaysAndWhenInUsePermission": "Permitir $(PRODUCT_NAME) usar tu ubicación en segundo plano."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "22929084-7c88-45ce-81ae-25edf0b43e8a"
+      }
+    }
   }
 }
