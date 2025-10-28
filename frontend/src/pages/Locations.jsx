@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Smartphone, Calendar, Navigation } from 'lucide-react'
+import { MapPin, Smartphone, Calendar, Navigation, MessageCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet'

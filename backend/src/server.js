@@ -195,5 +195,29 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
+// Inicializar bots (opcional)
+async function initializeBots() {
+  // Bot de Telegram
+  if (process.env.TELEGRAM_BOT_TOKEN) {
+    console.log('🤖 Initializing Telegram bot...');
+    const telegramBot = require('./bot/telegramBot');
+    telegramBot.init(process.env.TELEGRAM_BOT_TOKEN);
+  } else {
+    console.log('⚠️ TELEGRAM_BOT_TOKEN not set, skipping Telegram bot');
+  }
+
+  // Bot de WhatsApp
+  if (process.env.ENABLE_WHATSAPP_BOT === 'true') {
+    console.log('💬 Initializing WhatsApp bot...');
+    const whatsappBot = require('./bot/whatsappBot');
+    whatsappBot.init();
+  } else {
+    console.log('⚠️ WhatsApp bot disabled (set ENABLE_WHATSAPP_BOT=true to enable)');
+  }
+}
+
+// Inicializar bots antes de iniciar servidor
+initializeBots();
+
 startServer();
 
