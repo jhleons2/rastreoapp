@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Devices from './pages/Devices'
 import Locations from './pages/Locations'
 import TrackingMethods from './pages/TrackingMethods'
+import ShareLocation from './pages/ShareLocation'
 import Layout from './components/Layout'
 import './styles/index.css'
 
@@ -36,6 +37,7 @@ function App() {
       <Routes>
         <Route path="/login" element={token ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} />
         <Route path="/register" element={token ? <Navigate to="/dashboard" /> : <Register onLogin={handleLogin} />} />
+        <Route path="/share-location/:token" element={<ShareLocation />} />
         
         <Route path="/" element={token ? <Layout onLogout={handleLogout}><Dashboard /></Layout> : <Navigate to="/login" />} />
         <Route path="/dashboard" element={token ? <Layout onLogout={handleLogout}><Dashboard /></Layout> : <Navigate to="/login" />} />

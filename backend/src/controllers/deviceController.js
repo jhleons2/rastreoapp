@@ -5,16 +5,30 @@ exports.getDevices = async (req, res) => {
     const devices = await Device.findAll({
       where: { user_id: req.user.id },
       attributes: ['id', 'user_id', 'device_name', 'device_type', 'is_active', 'last_seen', 'created_at', 'updated_at'],
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['phone_number']
+      }],
       order: [['created_at', 'DESC']]
+    });
+
+    // Agregar phone_number al objeto device
+    const devicesWithPhone = devices.map(device => {
+      const plainDevice = device.get({ plain: true });
+      return {
+        ...plainDevice,
+        phone_number: device.user?.phone_number
+      };
     });
 
     console.log('[getDevices] Dispositivos encontrados:', {
       userId: req.user.id,
-      count: devices.length,
+      count: devicesWithPhone.length,
       timestamp: new Date().toISOString()
     });
 
-    res.json(devices);
+    res.json(devicesWithPhone);
   } catch (error) {
     console.error('[getDevices] Error:', {
       error: error.message,

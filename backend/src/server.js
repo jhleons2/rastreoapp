@@ -118,6 +118,7 @@ app.use('/api/devices', require('./routes/devices'));
 app.use('/api/locations', require('./routes/locations'));
 app.use('/api/geofences', require('./routes/geofences'));
 app.use('/api/bots', require('./routes/botRoutes'));
+app.use('/api/share', require('./routes/shareLocation'));
 
 // 404 Handler
 app.use((req, res) => {

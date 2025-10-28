@@ -8,6 +8,7 @@ export default function TrackingMethods() {
   const [devices, setDevices] = useState([])
   const [selectedDevice, setSelectedDevice] = useState(null)
   const [currentLocation, setCurrentLocation] = useState(null)
+  const [generatingLink, setGeneratingLink] = useState(false)
 
   useEffect(() => {
     fetchDevices()
@@ -67,25 +68,54 @@ export default function TrackingMethods() {
     }
   }
 
-  const shareViaWhatsApp = () => {
-    if (!currentLocation) {
-      toast.error('No hay ubicación disponible. Asegúrate de que el dispositivo tenga ubicaciones registradas.')
+  const shareViaWhatsApp = async () => {
+    if (!selectedDevice) {
+      toast.error('Selecciona un dispositivo')
       return
     }
 
-    const lat = Number(currentLocation.latitude).toFixed(6)
-    const lon = Number(currentLocation.longitude).toFixed(6)
-    const timestamp = new Date(currentLocation.timestamp).toLocaleString('es-ES')
-    
-    const message = `📍 Mi ubicación actual - Rastreo App\n\n` +
-      `Coordenadas: ${lat}, ${lon}\n` +
-      `Fecha: ${timestamp}\n\n` +
-      `Ver en mapa: https://maps.google.com/?q=${lat},${lon}\n\n` +
-      `Rastreo App`;
-    
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
-    toast.success('Abriendo WhatsApp...')
+    setGeneratingLink(true)
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_URL}/api/share/generate-share-link`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ device_id: selectedDevice })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Obtener info del dispositivo
+        const device = devices.find(d => d.id === selectedDevice)
+        const deviceName = device?.device_name || 'Dispositivo'
+        const phoneNumber = device?.phone_number || ''
+        
+        const message = `📍 Solicitud de Ubicación - Rastreo App\n\n` +
+          `Hola, necesito conocer tu ubicación actual.\n\n` +
+          `Por favor, haz clic en el siguiente link para compartirla:\n${data.shareLink}\n\n` +
+          `Este link expira en 1 hora.\n\n` +
+          `Rastreo App`;
+        
+        // Formar número de teléfono para WhatsApp
+        const whatsappNumber = phoneNumber.replace(/[^0-9]/g, '')
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+        
+        window.open(whatsappUrl, '_blank')
+        toast.success('Abriendo WhatsApp con el link...')
+      } else {
+        toast.error(data.error || 'Error al generar link')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Error al generar link')
+    } finally {
+      setGeneratingLink(false)
+    }
   }
 
   const copyLocationToClipboard = () => {
