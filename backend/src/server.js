@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
 
-const sequelize = require('./config/database');
+// const sequelize = require('./config/database'); // Comentado temporalmente
 
 const app = express();
 
@@ -86,10 +86,10 @@ const startServer = async () => {
       console.log(`🌐 URL: http://0.0.0.0:${PORT}`);
       console.log(`❤️  Health check: http://0.0.0.0:${PORT}/health`);
       
-      // Intentar conectar a base de datos en background
-      sequelize.authenticate()
-        .then(() => console.log('✅ Base de datos conectada correctamente'))
-        .catch((err) => console.log('⚠️ Base de datos no conectada:', err.message));
+      // Intentar conectar a base de datos en background (comentado temporalmente)
+      // sequelize.authenticate()
+      //   .then(() => console.log('✅ Base de datos conectada correctamente'))
+      //   .catch((err) => console.log('⚠️ Base de datos no conectada:', err.message));
     });
     
   } catch (error) {
@@ -101,13 +101,13 @@ const startServer = async () => {
 // Manejo graceful de señales
 process.on('SIGTERM', async () => {
   console.log('⚠️ SIGTERM recibido, cerrando conexiones...');
-  await sequelize.close();
+  // await sequelize.close(); // Comentado temporalmente
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('⚠️ SIGINT recibido, cerrando conexiones...');
-  await sequelize.close();
+  // await sequelize.close(); // Comentado temporalmente
   process.exit(0);
 });
 
