@@ -14,11 +14,6 @@ exports.register = async (req, res) => {
   try {
     const { phone_number, email, password } = req.body;
 
-    // Validar datos
-    if (!phone_number) {
-      return res.status(400).json({ error: 'Phone number is required' });
-    }
-
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ where: { phone_number } });
     if (existingUser) {
@@ -41,6 +36,12 @@ exports.register = async (req, res) => {
     // Generar token
     const token = generateToken(user.id);
 
+    console.log('[register] Usuario creado:', {
+      userId: user.id,
+      phone: phone_number,
+      timestamp: new Date().toISOString()
+    });
+
     res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -51,8 +52,16 @@ exports.register = async (req, res) => {
       token
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('[register] Error:', {
+      error: error.message,
+      stack: error.stack,
+      phone_number: req.body.phone_number,
+      timestamp: new Date().toISOString()
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -60,14 +69,11 @@ exports.login = async (req, res) => {
   try {
     const { phone_number, password } = req.body;
 
-    if (!phone_number) {
-      return res.status(400).json({ error: 'Phone number is required' });
-    }
-
     // Buscar usuario
     const user = await User.findOne({ where: { phone_number } });
     
     if (!user) {
+      console.log('[login] Usuario no encontrado:', { phone_number });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -75,12 +81,19 @@ exports.login = async (req, res) => {
     if (password && user.password_hash) {
       const isValid = await bcrypt.compare(password, user.password_hash);
       if (!isValid) {
+        console.log('[login] Contraseña incorrecta:', { userId: user.id, phone_number });
         return res.status(401).json({ error: 'Invalid credentials' });
       }
     }
 
     // Generar token
     const token = generateToken(user.id);
+
+    console.log('[login] Login exitoso:', {
+      userId: user.id,
+      phone: phone_number,
+      timestamp: new Date().toISOString()
+    });
 
     res.json({
       message: 'Login successful',
@@ -92,25 +105,54 @@ exports.login = async (req, res) => {
       token
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('[login] Error:', {
+      error: error.message,
+      stack: error.stack,
+      phone_number: req.body.phone_number,
+      timestamp: new Date().toISOString()
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      include: [{ model: Device, as: 'devices' }]
+      attributes: ['id', 'phone_number', 'email', 'created_at', 'updated_at'],
+      include: [{ 
+        model: Device, 
+        as: 'devices',
+        required: false, // Left join - no falla si no hay devices
+        attributes: ['id', 'device_name', 'device_type', 'is_active', 'last_seen', 'created_at']
+      }]
     });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     res.json({
       id: user.id,
       phone_number: user.phone_number,
       email: user.email,
-      devices: user.devices || []
+      devices: user.devices || [],
+      created_at: user.created_at,
+      updated_at: user.updated_at
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('[getProfile] Error:', {
+      error: error.message,
+      stack: error.stack,
+      userId: req.user.id,
+      timestamp: new Date().toISOString()
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

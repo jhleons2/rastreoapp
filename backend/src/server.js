@@ -30,6 +30,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Sanitización global de entrada
+const { sanitizeInput } = require('./middleware/validation');
+app.use(sanitizeInput);
+
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`📥 Request: ${req.method} ${req.path}`);

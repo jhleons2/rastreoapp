@@ -8,6 +8,7 @@ export default function Devices() {
   const [devices, setDevices] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  const [editingDevice, setEditingDevice] = useState(null)
   const [formData, setFormData] = useState({
     device_name: '',
     device_type: 'mobile'
@@ -42,8 +43,13 @@ export default function Devices() {
     e.preventDefault()
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`${API_URL}/api/devices`, {
-        method: 'POST',
+      const method = editingDevice ? 'PUT' : 'POST'
+      const url = editingDevice 
+        ? `${API_URL}/api/devices/${editingDevice}`
+        : `${API_URL}/api/devices`
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -52,16 +58,49 @@ export default function Devices() {
       })
 
       if (response.ok) {
-        toast.success('Dispositivo registrado exitosamente')
+        toast.success(editingDevice ? 'Dispositivo actualizado exitosamente' : 'Dispositivo registrado exitosamente')
         setShowModal(false)
+        setEditingDevice(null)
         setFormData({ device_name: '', device_type: 'mobile' })
         fetchDevices()
       } else {
         const data = await response.json()
-        toast.error(data.message || 'Error al registrar dispositivo')
+        toast.error(data.error || 'Error al registrar dispositivo')
       }
     } catch (error) {
       toast.error('Error al registrar dispositivo')
+    }
+  }
+
+  const handleEdit = (device) => {
+    setFormData({
+      device_name: device.device_name,
+      device_type: device.device_type
+    })
+    setEditingDevice(device.id)
+    setShowModal(true)
+  }
+
+  const handleDelete = async (deviceId) => {
+    if (!confirm('¿Estás seguro de eliminar este dispositivo?')) return
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_URL}/api/devices/${deviceId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        toast.success('Dispositivo eliminado exitosamente')
+        fetchDevices()
+      } else {
+        toast.error('Error al eliminar dispositivo')
+      }
+    } catch (error) {
+      toast.error('Error al eliminar dispositivo')
     }
   }
 
@@ -109,23 +148,43 @@ export default function Devices() {
                     <Smartphone className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">{device.name || 'Dispositivo'}</h3>
-                    <p className="text-sm text-gray-600">{device.platform || 'N/A'}</p>
+                    <h3 className="font-bold text-gray-900">{device.device_name || `Dispositivo ${device.id}`}</h3>
+                    <p className="text-sm text-gray-600 capitalize">{device.device_type || 'N/A'}</p>
                   </div>
                 </div>
               </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                device.is_active 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {device.is_active ? 'Activo' : 'Inactivo'}
+              </div>
+            </div>
               
               <div className="space-y-2 text-sm text-gray-600">
-                <p>Última vez: {device.last_seen_at || 'Nunca'}</p>
-                <p>ID: {device.device_id_hash?.substring(0, 8)}...</p>
+                <p>Última vez: {device.last_seen 
+                  ? new Date(device.last_seen).toLocaleString('es-ES')
+                  : 'Nunca'
+                }</p>
+                <p>ID: #{device.id}</p>
+                <p className="text-xs text-gray-500">
+                  Creado: {new Date(device.created_at).toLocaleDateString('es-ES')}
+                </p>
               </div>
 
               <div className="flex gap-2 mt-4">
-                <button className="btn-secondary flex-1 py-2">
+                <button 
+                  onClick={() => handleEdit(device)} 
+                  className="btn-secondary flex-1 py-2"
+                >
                   <Edit className="w-4 h-4 inline mr-1" />
                   Editar
                 </button>
-                <button className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg transition-colors">
+                <button 
+                  onClick={() => handleDelete(device.id)}
+                  className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg transition-colors"
+                >
                   <Trash2 className="w-4 h-4 inline mr-1" />
                   Eliminar
                 </button>
@@ -137,9 +196,21 @@ export default function Devices() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Registrar Dispositivo</h2>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setShowModal(false)
+            setEditingDevice(null)
+            setFormData({ device_name: '', device_type: 'mobile' })
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-4">
+              {editingDevice ? 'Editar Dispositivo' : 'Registrar Dispositivo'}
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -173,13 +244,17 @@ export default function Devices() {
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false)
+                    setEditingDevice(null)
+                    setFormData({ device_name: '', device_type: 'mobile' })
+                  }}
                   className="btn-secondary flex-1"
                 >
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary flex-1">
-                  Registrar
+                  {editingDevice ? 'Actualizar' : 'Registrar'}
                 </button>
               </div>
             </form>
