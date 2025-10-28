@@ -21,6 +21,12 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`📥 Request: ${req.method} ${req.path}`);
+  next();
+});
+
 // HEALTH CHECK - Crítico para Railway
 app.get('/health', (req, res) => {
   res.json({ 
@@ -33,16 +39,21 @@ app.get('/health', (req, res) => {
 
 // Ruta principal
 app.get('/', (req, res) => {
-  res.json({ 
-    message: '🚀 Tracking API - Taller 2 Redes MCIC',
-    description: 'Sistema de rastreo geográfico',
-    endpoints: {
-      health: '/health',
-      api: '/api'
-    },
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
-  });
+  res.send(`
+    <html>
+      <body style="background: black; color: white; padding: 50px; font-family: monospace;">
+        <h1>🚀 Tracking API - Taller 2 Redes MCIC</h1>
+        <p>Sistema de rastreo geográfico</p>
+        <h2>Endpoints:</h2>
+        <ul>
+          <li><a href="/health" style="color: cyan;">/health</a> - Health check</li>
+          <li><a href="/api" style="color: cyan;">/api</a> - API info</li>
+        </ul>
+        <p><strong>Environment:</strong> ${process.env.NODE_ENV || 'production'}</p>
+        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+      </body>
+    </html>
+  `);
 });
 
 // Placeholder para futuras rutas
