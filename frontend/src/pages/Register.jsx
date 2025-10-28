@@ -30,7 +30,7 @@ export default function Register({ onLogin }) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al registrar')
+        throw new Error(data.error || data.message || 'Error al registrar')
       }
 
       toast.success('¡Cuenta creada exitosamente!')

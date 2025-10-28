@@ -30,7 +30,7 @@ export default function Login({ onLogin }) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión')
+        throw new Error(data.error || data.message || 'Error al iniciar sesión')
       }
 
       toast.success('¡Bienvenido!')
