@@ -41,12 +41,11 @@ exports.createLocation = async (req, res) => {
       timestamp: new Date()
     };
 
-    // Agregar información de dirección si está disponible
-    if (addressData && addressData.address) {
-      locationData.address = addressData.address;
-      locationData.formatted_address = `${addressData.address_components.road || ''} ${addressData.address_components.house_number || ''}`.trim();
-      locationData.address_components = addressData.address_components;
-    }
+    // Geocodificación inversa (opcional - solo si se necesita)
+    // Por ahora comentado porque las columnas no existen en la BD
+    // if (addressData && addressData.address) {
+    //   console.log('Dirección obtenida:', addressData.address);
+    // }
 
     const location = await Location.create(locationData);
 

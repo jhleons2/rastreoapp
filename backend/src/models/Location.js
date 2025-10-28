@@ -35,19 +35,6 @@ module.exports = (sequelize) => {
     type: DataTypes.DECIMAL(5, 2),
     allowNull: true
   },
-  address: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  formatted_address: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  address_components: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {}
-  },
   timestamp: {
     type: DataTypes.DATE,
     allowNull: false,
