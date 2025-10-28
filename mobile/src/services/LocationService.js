@@ -1,6 +1,5 @@
-import Geolocation from 'react-native-geolocation-service';
-import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Platform, Alert } from 'react-native';
+import * as Location from 'expo-location';
+import { Alert } from 'react-native';
 import api from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -8,39 +7,33 @@ class LocationService {
   watchId = null;
   isTracking = false;
   intervalTime = 10 * 60 * 1000; // 10 minutos por defecto
+  timerId = null;
 
   /**
    * Solicitar permisos de ubicación
    */
   async requestPermissions() {
     try {
-      let permission;
+      // Solicitar permisos con Expo
+      const { status } = await Location.requestForegroundPermissionsAsync();
       
-      if (Platform.OS === 'android') {
-        permission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
-      } else {
-        permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
-      }
-
-      const result = await request(permission);
-      
-      if (result === RESULTS.GRANTED) {
+      if (status === 'granted') {
+        // También solicitar permisos de fondo (solo en Android)
+        await Location.requestBackgroundPermissionsAsync();
         return true;
-      } else if (result === RESULTS.DENIED) {
+      } else if (status === 'denied') {
         Alert.alert(
           'Permiso Denegado',
           'Necesitas activar los permisos de ubicación para usar esta app.'
         );
         return false;
-      } else if (result === RESULTS.BLOCKED) {
+      } else {
         Alert.alert(
           'Permiso Bloqueado',
           'Por favor, habilita los permisos de ubicación en la configuración de tu dispositivo.'
         );
         return false;
       }
-      
-      return false;
     } catch (error) {
       console.error('Error requesting permissions:', error);
       return false;
@@ -50,35 +43,25 @@ class LocationService {
   /**
    * Obtener ubicación actual
    */
-  getCurrentLocation() {
-    return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            altitude: position.coords.altitude,
-            speed: position.coords.speed,
-            heading: position.coords.heading,
-            timestamp: position.timestamp,
-          });
-        },
-        (error) => {
-          console.error('Location error:', error);
-          reject(error);
-        },
-        {
-          accuracy: {
-            android: 'high',
-            ios: 'best',
-          },
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 10000,
-        }
-      );
-    });
+  async getCurrentLocation() {
+    try {
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      return {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        accuracy: location.coords.accuracy,
+        altitude: location.coords.altitude,
+        speed: location.coords.speed,
+        heading: location.coords.heading,
+        timestamp: location.timestamp,
+      };
+    } catch (error) {
+      console.error('Location error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -130,54 +113,36 @@ class LocationService {
     this.intervalTime = interval * 60 * 1000; // Convertir minutos a ms
     console.log(`Starting tracking with interval: ${interval} minutes`);
 
-    // Enviar ubicación inicial
+    // Enviar ubicación inicial inmediatamente
     try {
       const location = await this.getCurrentLocation();
       await this.sendLocationToServer(deviceId, location);
+      console.log('Initial location sent:', location);
     } catch (error) {
       console.error('Error getting initial location:', error);
     }
 
-    // Configurar watchPosition para capturar cambios
-    this.watchId = Geolocation.watchPosition(
-      (position) => {
-        const locationData = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy,
-          altitude: position.coords.altitude,
-          speed: position.coords.speed,
-          heading: position.coords.heading,
-          timestamp: position.timestamp,
-        };
-
-        this.sendLocationToServer(deviceId, locationData);
-      },
-      (error) => {
-        console.error('Watch position error:', error);
-      },
-      {
-        accuracy: {
-          android: 'high',
-          ios: 'best',
-        },
-        enableHighAccuracy: true,
-        distanceFilter: 10, // Mínimo 10 metros de movimiento
-        interval: this.intervalTime,
-        fastestInterval: this.intervalTime,
+    // Configurar timer para enviar ubicaciones periódicamente
+    this.timerId = setInterval(async () => {
+      try {
+        const location = await this.getCurrentLocation();
+        await this.sendLocationToServer(deviceId, location);
+        console.log('Location sent (periodic):', location);
+      } catch (error) {
+        console.error('Error sending periodic location:', error);
       }
-    );
+    }, this.intervalTime);
 
-    console.log('Tracking started with watch ID:', this.watchId);
+    console.log('Tracking started');
   }
 
   /**
    * Detener rastreo
    */
   stopTracking() {
-    if (this.watchId !== null) {
-      Geolocation.clearWatch(this.watchId);
-      this.watchId = null;
+    if (this.timerId !== null) {
+      clearInterval(this.timerId);
+      this.timerId = null;
       this.isTracking = false;
       console.log('Tracking stopped');
     }
@@ -192,4 +157,3 @@ class LocationService {
 }
 
 export default new LocationService();
-

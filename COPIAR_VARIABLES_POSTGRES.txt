@@ -1,0 +1,69 @@
+═══════════════════════════════════════════════════════════════
+    📋 PASOS PARA CONECTAR POSTGRESQL
+═══════════════════════════════════════════════════════════════
+
+PASO 1: Ir a PostgreSQL Service
+───────────────────────────────────
+
+En Railway Dashboard, panel izquierdo:
+1. Click en "Postgres" (tu servicio de base de datos)
+2. Click en la pestaña "Variables"
+
+PASO 2: Buscar y Copiar DATABASE_URL
+───────────────────────────────────────
+
+En la lista de Variables, busca:
+- DATABASE_URL
+
+1. Click en los "..." (3 puntos) al lado de DATABASE_URL
+2. Click en "Reveal" para ver el valor
+3. COPIA todo el valor completo
+   Ejemplo: postgresql://postgres:abc123@host:port/railway
+
+PASO 3: Agregar a rastreoapp
+───────────────────────────────
+
+1. Click en "rastreoapp" (panel izquierdo)
+2. Click en "Variables" (pestaña)
+3. Click en "+ New Variable"
+4. En "Name" pon: DATABASE_URL
+5. En "Value" pega el valor que copiaste de PostgreSQL
+6. Click en "Add" o "Save"
+
+PASO 4: Redeploy
+───────────────────
+
+1. Ve a "Deployments"
+2. Click en "..." del último deployment
+3. Click en "Redeploy"
+4. Espera 1-2 minutos
+
+PASO 5: Verificar
+───────────────────
+
+Prueba: https://rastreoapp-production.up.railway.app/health
+
+Deberías ver:
+{
+  "status": "ok",
+  "database": "connected" ← Esto debe cambiar!
+  ...
+}
+
+═══════════════════════════════════════════════════════════════
+
+ALTERNATIVA: Si no encuentras DATABASE_URL
+────────────────────────────────────────────
+
+Busca estas variables individuales y cópialas:
+- PGHOST
+- PGPORT
+- PGUSER
+- PGPASSWORD
+- PGDATABASE
+
+Luego construye la URL:
+postgresql://[PGUSER]:[PGPASSWORD]@[PGHOST]:[PGPORT]/[PGDATABASE]
+
+═══════════════════════════════════════════════════════════════
+

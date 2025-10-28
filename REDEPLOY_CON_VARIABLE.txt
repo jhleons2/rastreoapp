@@ -1,0 +1,56 @@
+═══════════════════════════════════════════════════════════════
+    ✅ VARIABLE AGREGADA - HACER REDEPLOY
+═══════════════════════════════════════════════════════════════
+
+VERIFICASTE:
+─────────────
+✅ DATABASE_PUBLIC_URL está configurada
+✅ Valor correcto: ballast.proxy.rlwy.net (URL pública)
+
+AHORA:
+───────
+
+PASO 1: Redeploy
+────────────────
+
+En Railway Dashboard:
+1. rastreoapp → Deployments
+2. Click en "..." (3 puntos) del deployment
+3. Click en "Redeploy"
+4. ESPERA 2-3 minutos
+
+PASO 2: Verificar en Logs
+───────────────────────────
+
+Después del redeploy, en Logs deberías ver:
+
+❌ ANTES (error):
+   "🔗 Host: postgres.railway.internal"
+   
+✅ DESPUÉS (correcto):
+   "🔗 Host: ballast.proxy.rlwy.net"
+   "✅ Base de datos conectada correctamente"
+
+═══════════════════════════════════════════════════════════════
+
+PASO 3: Probar Health Check
+──────────────────────────────
+
+https://rastreoapp-production.up.railway.app/health
+
+DEBERÍAS VER:
+{
+  "status": "ok",
+  "database": "connected",  ← ESTO DEBE CAMBIAR!
+  ...
+}
+
+═══════════════════════════════════════════════════════════════
+
+SI TODAVÍA DICE "disconnected":
+─────────────────────────────────
+
+Espera 1-2 minutos más, Railway puede tardar en aplicar cambios.
+
+═══════════════════════════════════════════════════════════════
+

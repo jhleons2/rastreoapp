@@ -1,0 +1,62 @@
+═══════════════════════════════════════════════════════════════
+    🚂 CONFIGURAR RAILWAY PARA FRONTEND
+═══════════════════════════════════════════════════════════════
+
+PROBLEMA:
+─────────
+
+En Railway aparece página por defecto porque está tomando
+la RAIZ del proyecto en vez de la carpeta frontend/.
+
+═══════════════════════════════════════════════════════════════
+
+SOLUCIÓN:
+─────────
+
+PASO 1: Ir a Railway Dashboard
+────────────────────────────────
+
+1. Abre Railway Dashboard
+2. Ve a tu proyecto "rastreoapp"
+3. Click en el servicio "rastreoapp-frontend"
+
+PASO 2: Configurar Root Directory
+──────────────────────────────────
+
+1. Click en "Settings" (Configuración)
+2. Busca "Root Directory"
+3. ESCRIBE: frontend
+4. Click en "Save" (Guardar)
+
+PASO 3: Redeploy
+────────────────
+
+1. Ve a la pestaña "Deployments"
+2. Busca el último deployment
+3. Click en "..." (tres puntos)
+4. Click en "Redeploy"
+5. ESPERA 3-5 minutos
+
+═══════════════════════════════════════════════════════════════
+
+VERIFICACIÓN:
+─────────────
+
+Después de 3-5 minutos:
+
+1. Abre: https://rastreoapp-frontend.railway.app
+2. Deberías ver la página de LOGIN (bonita)
+3. NO deberías ver la ASCII art de Railway
+
+═══════════════════════════════════════════════════════════════
+
+SI AÚN NO FUNCIONA:
+───────────────────
+
+Verifica en Settings → Build & Deploy:
+
+Build Command: npm install && npm run build
+Start Command: npm start
+
+═══════════════════════════════════════════════════════════════
+

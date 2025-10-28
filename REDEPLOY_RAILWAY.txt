@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+    ✅ VARIABLE CONFIGURADA - HACER REDEPLOY
+═══════════════════════════════════════════════════════════════
+
+YA HICISTE:
+  ✅ PostgreSQL creado
+  ✅ Variable DATABASE_URL agregada en rastreoapp
+  ✅ Valor correcto configurado
+
+AHORA NECESITAS:
+───────────────────
+
+HACER REDEPLOY para que Railway use las nuevas variables
+
+═══════════════════════════════════════════════════════════════
+
+PASO 1: Hacer Redeploy
+────────────────────────
+
+1. En Railway Dashboard, ve a "rastreoapp"
+2. Click en la pestaña "Deployments"
+3. Verás el último deployment (con checkmark verde)
+4. Click en los 3 puntos "..." del deployment
+5. Click en "Redeploy"
+6. Espera 1-2 minutos
+
+PASO 2: Verificar en Logs
+────────────────────────────
+
+Después del redeploy:
+1. Click en "Logs"
+2. Busca estos mensajes:
+   ✅ "✅ Servidor corriendo en puerto 8080"
+   ✅ "✅ Base de datos conectada correctamente"
+
+Si ves "⚠️ Base de datos no conectada" sigue leyendo...
+
+PASO 3: Probar Health Check
+──────────────────────────────
+
+https://rastreoapp-production.up.railway.app/health
+
+AHORA deberías ver:
+{
+  "status": "ok",
+  "database": "connected",  ← ESTO DEBE CAMBIAR!
+  ...
+}
+
+═══════════════════════════════════════════════════════════════
+
+SI TODAVÍA DICE "disconnected":
+────────────────────────────────
+
+Puede ser que Railway necesite reiniciar completamente el servicio.
+
+1. Ve a Settings del servicio rastreoapp
+2. Busca "Restart" o "Reboot"
+3. Click en "Restart Service"
+4. Espera 30 segundos
+
+═══════════════════════════════════════════════════════════════
+
+VER LOGS DETALLADOS:
+──────────────────────
+
+Los logs te dirán exactamente por qué falla:
+- "Connection refused" = PostgreSQL no accesible
+- "Password authentication failed" = Password incorrecta
+- "Database does not exist" = Nombre de DB incorrecto
+- "timeout" = PostgreSQL no está respondiendo
+
+═══════════════════════════════════════════════════════════════
+

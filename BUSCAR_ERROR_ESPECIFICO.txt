@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+    🔍 BUSCAR EL MENSAJE DE ERROR COMPLETO
+═══════════════════════════════════════════════════════════════
+
+EN LOS LOGS BUSCA:
+─────────────────────
+
+Busca estas líneas específicamente:
+
+1. "⚠️ Base de datos no conectada"
+2. "❌ Error:"  ← ESTE ES EL IMPORTANTE
+3. Posiblemente: "getaddrinfo ENOTFOUND..."
+4. O: "Connection refused"
+5. O: "Password authentication failed"
+
+EJEMPLO DE LO QUE NECESITO:
+────────────────────────────
+
+⚠️ Base de datos no conectada
+❌ Error: getaddrinfo ENOTFOUND postgres.railway.internal
+
+O:
+
+⚠️ Base de datos no conectada  
+❌ Error: connection refused
+
+El mensaje DESPUÉS de "❌ Error:" es lo que necesito.
+
+═══════════════════════════════════════════════════════════════
+
+SI NO VES NINGÚN ERROR:
+─────────────────────────
+
+Si solo ves "✅ Base de datos conectada correctamente"
+PERO el health check dice "disconnected"
+
+Entonces el problema puede ser que la conexión se haga en background
+y el health check se ejecuta antes de que termine.
+
+═══════════════════════════════════════════════════════════════
+
+POR FAVOR:
+──────────
+
+Busca la línea "❌ Error:" en los logs
+y pégame TODO ese mensaje de error completo.
+
+═══════════════════════════════════════════════════════════════
+
