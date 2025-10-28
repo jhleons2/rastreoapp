@@ -13,6 +13,12 @@ export default function TrackingMethods() {
     fetchDevices()
   }, [])
 
+  useEffect(() => {
+    if (selectedDevice) {
+      fetchCurrentLocation()
+    }
+  }, [selectedDevice])
+
   const fetchDevices = async () => {
     try {
       const token = localStorage.getItem('token')
@@ -36,7 +42,6 @@ export default function TrackingMethods() {
 
   const fetchCurrentLocation = async () => {
     if (!selectedDevice) {
-      toast.error('Selecciona un dispositivo primero')
       return
     }
 
@@ -52,16 +57,19 @@ export default function TrackingMethods() {
         const data = await response.json()
         if (data.length > 0) {
           setCurrentLocation(data[0])
+        } else {
+          setCurrentLocation(null)
         }
       }
     } catch (error) {
       console.error('Error fetching location:', error)
+      setCurrentLocation(null)
     }
   }
 
   const shareViaWhatsApp = () => {
     if (!currentLocation) {
-      toast.error('Primero obtén la ubicación actual')
+      toast.error('No hay ubicación disponible. Asegúrate de que el dispositivo tenga ubicaciones registradas.')
       return
     }
 
@@ -82,7 +90,7 @@ export default function TrackingMethods() {
 
   const copyLocationToClipboard = () => {
     if (!currentLocation) {
-      toast.error('Primero obtén la ubicación actual')
+      toast.error('No hay ubicación disponible para copiar')
       return
     }
 
@@ -120,10 +128,10 @@ export default function TrackingMethods() {
         
         <button
           onClick={fetchCurrentLocation}
-          className="btn-primary mt-4 w-full"
+          className="btn-secondary mt-4 w-full"
         >
           <Navigation className="w-4 h-4 inline mr-2" />
-          Obtener Ubicación Actual
+          Actualizar Ubicación
         </button>
       </div>
 
