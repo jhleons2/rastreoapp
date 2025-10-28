@@ -1,0 +1,42 @@
+{
+  "name": "tracking-backend",
+  "version": "1.0.0",
+  "description": "Backend API para sistema de rastreo - Taller 2 Redes MCIC",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "tracking",
+    "geolocation",
+    "api",
+    "railway"
+  ],
+  "author": "Jhon Leon",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^6.1.5",
+    "morgan": "^1.10.0",
+    "dotenv": "^16.3.1",
+    "sequelize": "^6.32.1",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "socket.io": "^4.6.2",
+    "axios": "^1.5.0",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
+
