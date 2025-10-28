@@ -100,9 +100,19 @@ export default function TrackingMethods() {
         console.log('================================')
         
         const deviceName = device?.device_name || 'Dispositivo'
-        const phoneNumber = device?.phone_number || ''
+        const userPhoneNumber = device?.phone_number || ''
         
-        console.log('Número de teléfono encontrado:', phoneNumber)
+        // Extraer número telefónico del nombre del dispositivo si existe
+        const devicePhoneMatch = deviceName.match(/(\+?\d{10,12})/);
+        const devicePhone = devicePhoneMatch ? devicePhoneMatch[1] : null;
+        
+        // Usar primero el número del dispositivo, luego el del usuario
+        const phoneNumber = devicePhone || userPhoneNumber;
+        
+        console.log('Número del dispositivo (device_name):', deviceName)
+        console.log('Número extraído del device_name:', devicePhone)
+        console.log('Número del usuario:', userPhoneNumber)
+        console.log('Número final que se usará:', phoneNumber)
         
         // Si no hay número de teléfono, pedirlo al usuario
         if (!phoneNumber) {
