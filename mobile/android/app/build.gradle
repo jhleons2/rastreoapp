@@ -81,9 +81,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.rastreoapp"
+    namespace "com.rastreo.app"
     defaultConfig {
-        applicationId "com.rastreoapp"
+        applicationId "com.rastreo.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

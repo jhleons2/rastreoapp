@@ -7,6 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LocationService from '../services/LocationService';
@@ -28,7 +29,7 @@ export default function TrackingScreen({ navigation }) {
         setIsTracking(true);
         setDeviceId(savedDeviceId);
         // Restart tracking si estaba activo
-        LocationService.startTracking(savedDeviceId, 10);
+        LocationService.startTracking(savedDeviceId, 1);
       }
     };
     checkTracking();
@@ -97,13 +98,13 @@ export default function TrackingScreen({ navigation }) {
     }
 
     try {
-      await LocationService.startTracking(deviceId, 10); // 10 minutos
+      await LocationService.startTracking(deviceId, 1); // 1 minuto para testing más rápido
       setIsTracking(true);
       await AsyncStorage.setItem('isTracking', 'true');
       
       Alert.alert(
         'Rastreo Iniciado',
-        'Tu ubicación se enviará automáticamente cada 10 minutos',
+        'Tu ubicación se enviará automáticamente cada 1 minuto',
         [{ text: 'OK' }]
       );
     } catch (error) {
@@ -144,7 +145,10 @@ export default function TrackingScreen({ navigation }) {
             if (isTracking) {
               LocationService.stopTracking();
             }
-            await AsyncStorage.clear();
+            // Solo borrar token y user, mantener deviceId
+            await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('user');
+            await AsyncStorage.setItem('isTracking', 'false');
             navigation.replace('Login');
           },
         },
@@ -208,7 +212,7 @@ export default function TrackingScreen({ navigation }) {
 
           <Text style={styles.infoText}>
             {isTracking 
-              ? 'Tu ubicación se envía automáticamente cada 10 minutos' 
+              ? 'Tu ubicación se envía automáticamente cada 1 minuto' 
               : 'Inicia el rastreo para comenzar a enviar tu ubicación'}
           </Text>
         </View>

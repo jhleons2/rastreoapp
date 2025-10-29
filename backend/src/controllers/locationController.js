@@ -28,15 +28,20 @@ exports.createLocation = async (req, res) => {
       return res.status(404).json({ error: 'Device not found' });
     }
 
-    // Obtener dirección mediante geocodificación inversa
-    let addressData = null;
+    // Obtener dirección mediante geocodificación inversa (async sin bloquear)
+    let address = null;
     try {
-      addressData = await reverseGeocode(latitude, longitude);
+      const addressData = await reverseGeocode(parseFloat(latitude), parseFloat(longitude));
+      if (addressData && addressData.address && addressData.address !== 'Error al obtener dirección') {
+        address = addressData.address;
+        console.log('✅ Dirección obtenida:', address);
+      }
     } catch (error) {
-      console.error('Error in reverse geocoding:', error.message);
+      console.warn('⚠️ Error en geocodificación inversa (continuando sin dirección):', error.message);
+      // Continuamos sin dirección si falla - no es crítico
     }
 
-    // Crear ubicación
+    // Crear ubicación con dirección si está disponible
     const locationData = {
       device_id,
       latitude,
@@ -45,14 +50,9 @@ exports.createLocation = async (req, res) => {
       altitude: altitude || null,
       speed: speed || null,
       heading: heading || null,
+      address: address || null,
       timestamp: new Date()
     };
-
-    // Geocodificación inversa (opcional - solo si se necesita)
-    // Por ahora comentado porque las columnas no existen en la BD
-    // if (addressData && addressData.address) {
-    //   console.log('Dirección obtenida:', addressData.address);
-    // }
 
     const location = await Location.create(locationData);
     console.log('✅ Location created successfully with ID:', location.id);

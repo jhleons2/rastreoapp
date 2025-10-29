@@ -35,6 +35,11 @@ module.exports = (sequelize) => {
     type: DataTypes.DECIMAL(5, 2),
     allowNull: true
   },
+  address: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'Dirección obtenida mediante geocodificación inversa'
+  },
   timestamp: {
     type: DataTypes.DATE,
     allowNull: false,

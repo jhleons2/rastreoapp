@@ -88,7 +88,11 @@ app.get('/api', (req, res) => {
     message: 'API endpoints',
     auth: '/api/auth',
     devices: '/api/devices',
-    locations: '/api/locations'
+    locations: '/api/locations',
+    stats: '/api/stats',
+    geofences: '/api/geofences',
+    bots: '/api/bots',
+    share: '/api/share'
   });
 });
 
@@ -119,6 +123,7 @@ app.use('/api/locations', require('./routes/locations'));
 app.use('/api/geofences', require('./routes/geofences'));
 app.use('/api/bots', require('./routes/botRoutes'));
 app.use('/api/share', require('./routes/shareLocation'));
+app.use('/api/stats', require('./routes/stats'));
 
 // 404 Handler
 app.use((req, res) => {
