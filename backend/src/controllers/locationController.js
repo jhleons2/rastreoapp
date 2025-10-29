@@ -4,9 +4,16 @@ const { reverseGeocode } = require('../utils/geocoding');
 
 exports.createLocation = async (req, res) => {
   try {
+    console.log('📍📍📍 LOCATION REQUEST RECEIVED 📍📍📍');
+    console.log('Body:', req.body);
+    console.log('User:', req.user?.id);
+    
     const { device_id, latitude, longitude, accuracy, altitude, speed, heading } = req.body;
 
+    console.log('📍 Processing location for device:', device_id);
+
     if (!device_id || !latitude || !longitude) {
+      console.log('❌ Missing required fields');
       return res.status(400).json({ 
         error: 'Device ID, latitude and longitude are required' 
       });
@@ -48,9 +55,11 @@ exports.createLocation = async (req, res) => {
     // }
 
     const location = await Location.create(locationData);
+    console.log('✅ Location created successfully with ID:', location.id);
 
     // Actualizar last_seen del dispositivo
     await device.update({ last_seen: new Date() });
+    console.log('✅ Device last_seen updated');
 
     res.status(201).json(location);
   } catch (error) {
