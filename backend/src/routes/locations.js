@@ -11,6 +11,7 @@ router.use(authenticate);
 router.post('/', validateCreateLocation, handleValidationErrors, locationController.createLocation);
 router.get('/device/:device_id', validateGetLocations, handleValidationErrors, locationController.getLocations);
 router.get('/device/:device_id/current', validateGetCurrentLocation, handleValidationErrors, locationController.getCurrentLocation);
+router.get('/device/:device_id/export/csv', validateGetLocations, handleValidationErrors, locationController.exportLocationsCSV);
 
 module.exports = router;
 

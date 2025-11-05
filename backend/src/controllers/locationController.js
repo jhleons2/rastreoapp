@@ -192,3 +192,96 @@ exports.getCurrentLocation = async (req, res) => {
   }
 };
 
+exports.exportLocationsCSV = async (req, res) => {
+  try {
+    const { device_id } = req.params;
+    const { start_date, end_date } = req.query;
+
+    console.log(`📊 Exportando CSV - Device ID: ${device_id}, User ID: ${req.user?.id}`);
+
+    // Verificar que el dispositivo pertenece al usuario
+    const device = await Device.findOne({
+      where: { id: device_id, user_id: req.user.id }
+    });
+
+    if (!device) {
+      console.log(`❌ Device ${device_id} not found for user ${req.user.id}`);
+      return res.status(404).json({ error: 'Device not found' });
+    }
+
+    const where = { device_id };
+    
+    // Filtrar por fecha si se proporciona
+    if (start_date && end_date) {
+      where.timestamp = {
+        [Op.between]: [new Date(start_date), new Date(end_date)]
+      };
+    }
+
+    // Obtener ubicaciones
+    let locations;
+    try {
+      locations = await Location.findAll({
+        where,
+        order: [['timestamp', 'ASC']],
+        limit: 10000 // Límite razonable
+      });
+    } catch (dbError) {
+      if (dbError.message && dbError.message.includes('address')) {
+        locations = await Location.findAll({
+          where,
+          order: [['timestamp', 'ASC']],
+          limit: 10000,
+          attributes: ['id', 'device_id', 'latitude', 'longitude', 'accuracy', 'altitude', 'speed', 'heading', 'timestamp']
+        });
+      } else {
+        throw dbError;
+      }
+    }
+
+    if (locations.length === 0) {
+      return res.status(404).json({ error: 'No locations found' });
+    }
+
+    // Generar CSV
+    const headers = ['ID', 'Fecha', 'Hora', 'Latitud', 'Longitud', 'Precisión (m)', 'Altitud (m)', 'Velocidad (m/s)', 'Dirección (°)', 'Dirección'];
+    const csvRows = [headers.join(',')];
+
+    locations.forEach(loc => {
+      const date = new Date(loc.timestamp);
+      const row = [
+        loc.id,
+        date.toLocaleDateString('es-ES'),
+        date.toLocaleTimeString('es-ES'),
+        loc.latitude,
+        loc.longitude,
+        loc.accuracy || '',
+        loc.altitude || '',
+        loc.speed || '',
+        loc.heading || '',
+        loc.address ? `"${loc.address.replace(/"/g, '""')}"` : ''
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csv = csvRows.join('\n');
+    
+    // Configurar headers para descarga
+    const filename = `ubicaciones_${device.device_name || device_id}_${new Date().toISOString().split('T')[0]}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    
+    // Agregar BOM para UTF-8 (para que Excel lo abra correctamente)
+    res.write('\uFEFF');
+    res.send(csv);
+
+    console.log(`✅ CSV exportado: ${locations.length} ubicaciones`);
+  } catch (error) {
+    console.error('❌ Error exportando CSV:', error);
+    res.status(500).json({ 
+      error: 'Error al exportar CSV',
+      message: error.message
+    });
+  }
+};
+

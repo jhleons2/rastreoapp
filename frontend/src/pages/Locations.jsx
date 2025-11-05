@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Smartphone, Calendar, Navigation, MessageCircle, RefreshCw } from 'lucide-react'
+import { MapPin, Smartphone, Calendar, Navigation, MessageCircle, RefreshCw, Download, Share2, BarChart3 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet'
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 // Fix para iconos de Leaflet en React
 delete L.Icon.Default.prototype._getIconUrl
@@ -22,6 +23,7 @@ export default function Locations() {
   const [loadingLocations, setLoadingLocations] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
   const [lastUpdate, setLastUpdate] = useState(null)
+  const [showCharts, setShowCharts] = useState(false)
 
   useEffect(() => {
     fetchDevices()
@@ -124,6 +126,54 @@ export default function Locations() {
     }
   }
 
+  const handleExportCSV = async () => {
+    if (!selectedDevice) {
+      toast.error('Selecciona un dispositivo primero')
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_URL}/api/locations/device/${selectedDevice}/export/csv`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `ubicaciones_${selectedDevice}_${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        toast.success('CSV descargado exitosamente')
+      } else {
+        toast.error('Error al exportar CSV')
+      }
+    } catch (error) {
+      console.error('Error exportando CSV:', error)
+      toast.error('Error al exportar CSV')
+    }
+  }
+
+  const handleShareWhatsApp = () => {
+    if (locations.length === 0) {
+      toast.error('No hay ubicaciones para compartir')
+      return
+    }
+
+    const lastLocation = locations[0]
+    const message = `📍 Mi ubicación actual:\nLatitud: ${lastLocation.latitude}\nLongitud: ${lastLocation.longitude}\nVer en mapa: https://www.google.com/maps?q=${lastLocation.latitude},${lastLocation.longitude}`
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+    
+    window.open(whatsappUrl, '_blank')
+    toast.success('Compartiendo por WhatsApp')
+  }
+
   return (
     <div>
       <div className="mb-8">
@@ -137,7 +187,7 @@ export default function Locations() {
           <label className="block text-sm font-medium text-gray-700">
             Selecciona un dispositivo
           </label>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center flex-wrap">
             {/* Botón de refrescar manual */}
             <button
               onClick={handleManualRefresh}
@@ -150,6 +200,53 @@ export default function Locations() {
             >
               <RefreshCw className={`w-4 h-4 ${loadingLocations ? 'animate-spin' : ''}`} />
               Refrescar
+            </button>
+
+            {/* Botón de exportar CSV */}
+            <button
+              onClick={handleExportCSV}
+              disabled={!selectedDevice || locations.length === 0}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                selectedDevice && locations.length > 0
+                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              title="Exportar ubicaciones a CSV"
+            >
+              <Download className="w-4 h-4" />
+              Exportar CSV
+            </button>
+
+            {/* Botón de compartir WhatsApp */}
+            <button
+              onClick={handleShareWhatsApp}
+              disabled={locations.length === 0}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                locations.length > 0
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              title="Compartir última ubicación por WhatsApp"
+            >
+              <Share2 className="w-4 h-4" />
+              WhatsApp
+            </button>
+
+            {/* Botón de mostrar gráficos */}
+            <button
+              onClick={() => setShowCharts(!showCharts)}
+              disabled={locations.length === 0}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                locations.length > 0
+                  ? showCharts 
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                    : 'bg-purple-500 hover:bg-purple-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              title="Mostrar/Ocultar gráficos"
+            >
+              <BarChart3 className="w-4 h-4" />
+              {showCharts ? 'Ocultar' : 'Gráficos'}
             </button>
             
             {/* Toggle de auto-refresh */}
@@ -287,6 +384,98 @@ export default function Locations() {
                     />
                   )}
                 </MapContainer>
+              </div>
+            )}
+
+            {/* Gráficos de análisis */}
+            {showCharts && locations.length > 1 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">📊 Análisis de Ruta</h3>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Gráfico de Velocidad */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 className="text-md font-semibold text-gray-700 mb-3">Velocidad en el Tiempo</h4>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={locations.slice().reverse().map((loc, idx) => ({
+                        index: idx + 1,
+                        velocidad: loc.speed ? (parseFloat(loc.speed) * 3.6).toFixed(1) : 0,
+                        timestamp: new Date(loc.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="timestamp" tick={{ fontSize: 10 }} />
+                        <YAxis label={{ value: 'km/h', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="velocidad" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 2 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Gráfico de Altitud */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 className="text-md font-semibold text-gray-700 mb-3">Altitud en el Tiempo</h4>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <AreaChart data={locations.slice().reverse().map((loc, idx) => ({
+                        index: idx + 1,
+                        altitud: loc.altitude ? parseFloat(loc.altitude).toFixed(0) : 0,
+                        timestamp: new Date(loc.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="timestamp" tick={{ fontSize: 10 }} />
+                        <YAxis label={{ value: 'metros', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="altitud" stroke="#3b82f6" fill="#93c5fd" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Gráfico de Precisión */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 className="text-md font-semibold text-gray-700 mb-3">Precisión GPS</h4>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={locations.slice().reverse().map((loc, idx) => ({
+                        index: idx + 1,
+                        precision: loc.accuracy ? parseFloat(loc.accuracy).toFixed(1) : 0,
+                        timestamp: new Date(loc.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="timestamp" tick={{ fontSize: 10 }} />
+                        <YAxis label={{ value: 'metros', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="precision" stroke="#10b981" strokeWidth={2} dot={{ r: 2 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Estadísticas */}
+                  <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
+                    <h4 className="text-md font-semibold text-gray-700 mb-3">📈 Estadísticas</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Total de puntos:</span>
+                        <span className="font-bold text-purple-600">{locations.length}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Velocidad promedio:</span>
+                        <span className="font-bold text-blue-600">
+                          {(locations.reduce((sum, loc) => sum + (loc.speed ? parseFloat(loc.speed) * 3.6 : 0), 0) / locations.length).toFixed(1)} km/h
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Altitud promedio:</span>
+                        <span className="font-bold text-green-600">
+                          {(locations.reduce((sum, loc) => sum + (loc.altitude ? parseFloat(loc.altitude) : 0), 0) / locations.length).toFixed(0)} m
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Precisión promedio:</span>
+                        <span className="font-bold text-orange-600">
+                          {(locations.reduce((sum, loc) => sum + (loc.accuracy ? parseFloat(loc.accuracy) : 0), 0) / locations.length).toFixed(1)} m
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

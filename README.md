@@ -22,7 +22,22 @@ Sistema completo de rastreo geográfico en tiempo real con aplicación móvil, b
 
 ## 📖 Descripción
 
-Sistema de rastreo geográfico que permite monitorear ubicaciones en tiempo real a través de una aplicación móvil Android. Los datos se visualizan en un panel web interactivo con mapas, y se almacenan en una base de datos PostgreSQL. El sistema incluye notificaciones por Telegram y funcionalidades avanzadas de geocercas.
+### Objetivo del Taller
+
+**Parte IV. Programación - Utilizando técnicas, aplicaciones e Inteligencia Artificial**
+
+Crear una app, programa o bot para rastrear (ubicar) números telefónicos de servicios de mensajería instantánea como WhatsApp, Telegram, o directamente la ubicación geográfica de un celular.
+
+### Nuestra Solución
+
+Sistema completo de rastreo geográfico que permite monitorear ubicaciones en tiempo real a través de una aplicación móvil Android. Los datos se visualizan en un panel web interactivo con mapas, y se almacenan en una base de datos PostgreSQL. El sistema incluye:
+
+- **📱 Rastreo de ubicación geográfica** de dispositivos móviles mediante GPS
+- **🤖 Integración con Telegram** para notificaciones y compartir ubicaciones
+- **💬 Compartir por WhatsApp** mediante deep links
+- **🗺️ Visualización en tiempo real** en panel web interactivo
+- **📊 Análisis de rutas** con gráficos y estadísticas
+- **🔔 Sistema de alertas** mediante geocercas geográficas
 
 ### Componentes del Sistema
 
@@ -40,6 +55,9 @@ Sistema de rastreo geográfico que permite monitorear ubicaciones en tiempo real
 - ✅ Geocodificación inversa (coordenadas → dirección)
 - ✅ Historial completo de ubicaciones
 - ✅ Visualización en mapa interactivo con trayectorias
+- ✅ **NUEVO** 🎉 Exportar historial a CSV
+- ✅ **NUEVO** 🎉 Compartir ubicación por WhatsApp
+- ✅ **NUEVO** 🎉 Gráficos interactivos de análisis de rutas
 
 ### Gestión de Dispositivos
 - ✅ Registro múltiple de dispositivos por usuario
@@ -339,23 +357,32 @@ npm run type-check
 - [x] Geocodificación inversa
 - [x] Despliegue en Railway
 
+### Completado en v1.1.0 ✅ (Nov 5, 2025)
+- [x] Exportar historial a CSV ⭐
+- [x] Compartir ubicación por WhatsApp ⭐
+- [x] Gráficos de análisis de rutas ⭐
+
 ### Pendiente 🔄
 - [ ] Soporte iOS
 - [ ] Notificaciones push en app
-- [ ] Exportar historial (CSV, KML)
+- [ ] Exportar a KML/GPX
 - [ ] Modo offline
-- [ ] Compartir ubicación por WhatsApp
-- [ ] Gráficos de análisis de rutas
 - [ ] Multi-idioma
+- [ ] Compartir por Email
 
 ## 👥 Autores
 
-**Taller 2 - Redes MCIC**
+**Taller No. 2 - REDES MCIC**
 
-- **Desarrollador Principal**: [Tu Nombre]
-- **Universidad**: [Tu Universidad]
-- **Curso**: Redes de Computadores
-- **Fecha**: Noviembre 2025
+- **Jhon Helmit León Sandoval** - Código: 20141093012
+- **Jaime Andrés Parra Fajardo** - Código: 20251093001
+- **Thomas Felipe Peña Herrera** - Código: 20251092005
+- **David Eduardo Rojas Sánchez** - Código: 20251093006
+
+**Universidad Distrital Francisco José de Caldas**  
+**Maestría en Ciencias de la Información y las Comunicaciones (MCIC)**  
+**Curso**: Redes de Computadores  
+**Fecha**: Noviembre 2025
 
 ## 📄 Licencia
 
