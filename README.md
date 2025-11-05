@@ -398,14 +398,6 @@ Este proyecto es parte de un trabajo académico para el curso de Redes 2 - Espec
 - Leaflet por la librería de mapas
 - La comunidad de Stack Overflow
 
-## 📞 Soporte
-
-Para reportar problemas o solicitar ayuda:
-
-1. **Issues de GitHub**: [Crear issue](https://github.com/tu-usuario/taller2-redes/issues)
-2. **Documentación**: Ver carpeta `docs/`
-3. **Email**: tu-email@universidad.edu
-
 ## 🔗 Enlaces Útiles
 
 - [Documentación Oficial](docs/)
