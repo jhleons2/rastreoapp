@@ -326,7 +326,6 @@ npm run type-check
 - **Componentes React**: 15+
 - **Endpoints API**: 25+
 - **Modelos de datos**: 5
-- **Tiempo de desarrollo**: 2 semanas
 
 ## 🔒 Seguridad
 
