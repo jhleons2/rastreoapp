@@ -1,0 +1,52 @@
+==========================================
+  CÓMO GENERAR APK CON ANDROID STUDIO
+==========================================
+
+✅ El bundle JavaScript YA ESTÁ GENERADO en:
+   android/app/src/main/assets/index.android.bundle
+
+📱 PASOS PARA GENERAR APK RELEASE:
+
+1. Abre Android Studio
+
+2. File → Open → Navega a:
+   C:\Users\JHON LEON\Documents\Universidad\Redes 2\Taller2\mobile\android
+
+3. Espera que Gradle Sync termine (barra de progreso abajo)
+
+4. En el menú superior:
+   Build → Generate Signed Bundle / APK
+
+5. Selecciona "APK" y click en "Next"
+
+6. Si no tienes keystore, click en "Create new..."
+   (Para testing, puedes usar el debug keystore que ya existe)
+   
+   O simplemente:
+   Build → Build Bundle(s) / APK(s) → Build APK(s)
+
+7. El APK se generará en:
+   android\app\build\outputs\apk\release\app-release.apk
+   
+   (Para debug APK será en: debug\app-debug.apk)
+
+==========================================
+
+NOTA: Android Studio usa su propio JDK, así que NO tendrás 
+el error de Java 8 vs Java 11.
+
+==========================================
+
+📱 INSTALAR EL APK:
+
+Opción A - Con cable USB:
+   adb install -r android\app\build\outputs\apk\release\app-release.apk
+
+Opción B - Manual:
+   1. Copia el APK a tu teléfono
+   2. Abre el archivo desde el teléfono
+   3. Permite instalación desde fuentes desconocidas
+   4. Instalar
+
+==========================================
+

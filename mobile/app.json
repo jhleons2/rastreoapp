@@ -3,42 +3,9 @@
     "name": "RastreoApp",
     "slug": "rastreoapp",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./android/app/src/main/res/drawable/splashscreen_image.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Necesitamos tu ubicación para el rastreo geográfico.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Necesitamos tu ubicación en segundo plano para el rastreo continuo."
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.rastreo.app",
-      "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.FOREGROUND_SERVICE"
-      ]
-    },
-    "web": {
-      "favicon": "./android/app/src/main/res/mipmap-hdpi/ic_launcher.png"
-    },
     "plugins": [
       [
         "expo-location",

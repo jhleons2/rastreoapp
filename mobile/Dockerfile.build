@@ -1,0 +1,19 @@
+FROM reactnativecommunity/react-native-android:latest
+
+# Configurar directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Build APK
+WORKDIR /app/android
+RUN chmod +x gradlew
+RUN ./gradlew assembleRelease
+
+# APK estará en /app/android/app/build/outputs/apk/release/
+CMD ["echo", "APK built successfully"]
+

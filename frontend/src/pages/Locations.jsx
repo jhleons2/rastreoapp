@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Smartphone, Calendar, Navigation, MessageCircle } from 'lucide-react'
+import { MapPin, Smartphone, Calendar, Navigation, MessageCircle, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet'
@@ -20,6 +20,8 @@ export default function Locations() {
   const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingLocations, setLoadingLocations] = useState(false)
+  const [autoRefresh, setAutoRefresh] = useState(true)
+  const [lastUpdate, setLastUpdate] = useState(null)
 
   useEffect(() => {
     fetchDevices()
@@ -30,6 +32,18 @@ export default function Locations() {
       fetchLocations(selectedDevice)
     }
   }, [selectedDevice])
+
+  // Auto-refresh cada 30 segundos
+  useEffect(() => {
+    if (selectedDevice && autoRefresh) {
+      const interval = setInterval(() => {
+        console.log('🔄 Auto-refresh activado, actualizando ubicaciones...')
+        fetchLocations(selectedDevice, true) // true = silent refresh
+      }, 30000) // 30 segundos
+
+      return () => clearInterval(interval)
+    }
+  }, [selectedDevice, autoRefresh])
 
   const fetchDevices = async () => {
     try {
@@ -55,27 +69,58 @@ export default function Locations() {
     }
   }
 
-  const fetchLocations = async (deviceId) => {
-    setLoadingLocations(true)
+  const fetchLocations = async (deviceId, silent = false) => {
+    if (!silent) {
+      setLoadingLocations(true)
+    }
+    
     try {
       const token = localStorage.getItem('token')
+      console.log(`📍 Fetching locations for device ${deviceId}...`)
+      
       const response = await fetch(`${API_URL}/api/locations/device/${deviceId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
 
+      console.log(`📍 Response status: ${response.status}`)
+
       if (response.ok) {
         const data = await response.json()
+        console.log(`📍 Received ${data.length} locations`)
         setLocations(data)
+        setLastUpdate(new Date())
+        
+        if (!silent) {
+          toast.success(`${data.length} ubicaciones cargadas`)
+        }
       } else {
-        toast.error('Error al cargar ubicaciones')
+        const errorText = await response.text()
+        console.error('❌ Error response:', errorText)
+        
+        if (!silent) {
+          toast.error('Error al cargar ubicaciones')
+        }
       }
     } catch (error) {
-      console.error('Error fetching locations:', error)
-      toast.error('Error al cargar ubicaciones')
+      console.error('❌ Error fetching locations:', error)
+      
+      if (!silent) {
+        toast.error(`Error al cargar ubicaciones: ${error.message}`)
+      }
     } finally {
-      setLoadingLocations(false)
+      if (!silent) {
+        setLoadingLocations(false)
+      }
+    }
+  }
+
+  const handleManualRefresh = () => {
+    if (selectedDevice) {
+      console.log('🔄 Refrescando manualmente...')
+      toast.loading('Actualizando ubicaciones...', { duration: 1000 })
+      fetchLocations(selectedDevice)
     }
   }
 
@@ -88,9 +133,38 @@ export default function Locations() {
 
       {/* Selector de Dispositivo */}
       <div className="card mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Selecciona un dispositivo
-        </label>
+        <div className="flex justify-between items-center mb-3">
+          <label className="block text-sm font-medium text-gray-700">
+            Selecciona un dispositivo
+          </label>
+          <div className="flex gap-2 items-center">
+            {/* Botón de refrescar manual */}
+            <button
+              onClick={handleManualRefresh}
+              disabled={!selectedDevice || loadingLocations}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                selectedDevice && !loadingLocations
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingLocations ? 'animate-spin' : ''}`} />
+              Refrescar
+            </button>
+            
+            {/* Toggle de auto-refresh */}
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="w-4 h-4 text-blue-600 rounded"
+              />
+              Auto-actualizar
+            </label>
+          </div>
+        </div>
+        
         {loading ? (
           <div className="animate-pulse bg-gray-200 h-10 rounded"></div>
         ) : devices.length === 0 ? (
@@ -109,6 +183,13 @@ export default function Locations() {
               </option>
             ))}
           </select>
+        )}
+        
+        {/* Mostrar última actualización */}
+        {lastUpdate && (
+          <p className="text-xs text-gray-500 mt-2">
+            Última actualización: {lastUpdate.toLocaleTimeString('es-ES')}
+          </p>
         )}
       </div>
 

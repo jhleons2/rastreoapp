@@ -1,0 +1,99 @@
+==========================================
+  ✅ SOLUCIÓN COMPLETA - PASOS FINALES
+==========================================
+
+El problema del error "main has not been registered" YA ESTÁ SOLUCIONADO ✅
+
+Los archivos corregidos:
+✅ index.js - Ahora usa registerRootComponent de Expo
+✅ Bundle JavaScript - Regenerado con el código correcto
+
+==========================================
+  📱 INSTALAR LA APP (3 OPCIONES)
+==========================================
+
+┌─────────────────────────────────────────┐
+│ OPCIÓN 1: ANDROID STUDIO (RECOMENDADO) │
+└─────────────────────────────────────────┘
+
+1. Abre Android Studio
+
+2. File → Open → Selecciona:
+   C:\Users\JHON LEON\Documents\Universidad\Redes 2\Taller2\mobile\android
+
+3. Espera que "Gradle Sync" termine (barra de progreso abajo)
+
+4. Conecta tu dispositivo Android por USB
+   - Asegúrate de habilitar "Depuración USB" en el teléfono
+   - En Configuración → Opciones de desarrollador → Depuración USB
+
+5. En Android Studio:
+   - Arriba verás un botón verde ▶ "Run"
+   - Click ahí
+   - Selecciona tu dispositivo de la lista
+
+6. ¡Listo! Android Studio compilará e instalará automáticamente
+
+==========================================
+
+┌────────────────────────────────┐
+│ OPCIÓN 2: ABRIR CON METRO      │
+└────────────────────────────────┘
+
+Si prefieres usar el APK debug que ya tienes instalado:
+
+1. Ejecuta: EJECUTAR-CON-METRO.bat
+
+2. Espera que Metro inicie (verás "Metro waiting...")
+
+3. En tu dispositivo, abre la app y presiona RELOAD (R, R)
+
+==========================================
+
+┌─────────────────────────────────────┐
+│ OPCIÓN 3: COPIAR APK MANUALMENTE    │
+└─────────────────────────────────────┘
+
+Si Android Studio no está disponible:
+
+1. El APK debug está en:
+   android\app\build\outputs\apk\debug\app-debug.apk
+
+2. Copia este archivo a tu teléfono (USB, email, Drive, etc.)
+
+3. En tu teléfono, abre el archivo APK
+
+4. Permite "Instalar desde fuentes desconocidas" si lo pide
+
+5. Instalar
+
+6. IMPORTANTE: Para que funcione, necesitas ejecutar primero:
+   EJECUTAR-CON-METRO.bat
+
+==========================================
+  🔧 RESOLVER "adb not found"
+==========================================
+
+Si quieres usar comandos ADB desde terminal:
+
+1. Encuentra la carpeta de Android SDK
+   (Usualmente en: C:\Users\JHON LEON\AppData\Local\Android\Sdk)
+
+2. Agrega al PATH del sistema:
+   C:\Users\JHON LEON\AppData\Local\Android\Sdk\platform-tools
+
+3. Reinicia tu terminal
+
+==========================================
+  ✅ RECOMENDACIÓN FINAL
+==========================================
+
+USA LA OPCIÓN 1 (Android Studio) porque:
+✅ Es la más confiable
+✅ Maneja automáticamente el JDK correcto
+✅ Detecta tu dispositivo automáticamente
+✅ Compila e instala todo en un click
+✅ No necesitas configurar ADB manualmente
+
+==========================================
+

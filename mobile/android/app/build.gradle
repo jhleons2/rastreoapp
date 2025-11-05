@@ -114,6 +114,24 @@ android {
     }
 }
 
+// Clean duplicate resources before merge
+task cleanDuplicateResources {
+    doLast {
+        delete fileTree("$projectDir/src/main/res") {
+            include "drawable-*/**"
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'mergeReleaseResources') {
+        task.dependsOn cleanDuplicateResources
+    }
+    if (task.name == 'mergeDebugResources') {
+        task.dependsOn cleanDuplicateResources
+    }
+}
+
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
 // Accepts values in comma delimited lists, example:
 // android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini

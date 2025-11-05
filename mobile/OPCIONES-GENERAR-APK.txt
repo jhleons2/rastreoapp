@@ -1,0 +1,109 @@
+==========================================
+  FORMAS PRÁCTICAS DE GENERAR APK
+  (SIN ANDROID STUDIO)
+==========================================
+
+┌─────────────────────────────────────────┐
+│ OPCIÓN 1: EAS BUILD (EN LA NUBE) ⭐⭐⭐ │
+└─────────────────────────────────────────┘
+
+✅ La MÁS FÁCIL
+✅ No necesitas Java 11
+✅ No necesitas configurar nada local
+✅ Servicio gratuito de Expo (con límites)
+
+PASOS:
+
+1. Ejecuta: GENERAR-APK-NUBE.bat
+
+   O manualmente:
+   npm install -g eas-cli
+   eas login
+   eas build --platform android --profile preview
+
+2. Espera 10-15 minutos (se compila en la nube)
+
+3. Recibirás un link para descargar tu APK
+
+4. Descarga el APK e instálalo en tu dispositivo
+
+==========================================
+
+┌──────────────────────────────────────────┐
+│ OPCIÓN 2: USAR JDK DE ANDROID STUDIO    │
+└──────────────────────────────────────────┘
+
+Si tienes Android Studio instalado, puedes usar su JDK
+sin abrir Android Studio:
+
+PASOS:
+
+1. Ejecuta: GENERAR-APK-CON-JDK-ANDROID-STUDIO.bat
+
+   Esto usará el JDK 11 que viene con Android Studio
+
+==========================================
+
+┌──────────────────────────────────────────┐
+│ OPCIÓN 3: INSTALAR JAVA 11 MANUALMENTE  │
+└──────────────────────────────────────────┘
+
+Instala Java 11 y genera el APK localmente:
+
+PASOS:
+
+1. Descarga Java 11:
+   https://adoptium.net/temurin/releases/
+   (Selecciona JDK 11 LTS para Windows)
+
+2. Instala Java 11
+
+3. Configura JAVA_HOME:
+   set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-11.x.x.x-hotspot
+   
+4. Ejecuta:
+   cd android
+   gradlew assembleRelease
+
+==========================================
+
+┌──────────────────────────────────────────┐
+│ OPCIÓN 4: APK LOCAL CON EXPO             │
+└──────────────────────────────────────────┘
+
+Generar APK local usando Expo CLI:
+
+PASOS:
+
+1. Ejecuta: GENERAR-APK-LOCAL-EXPO.bat
+
+   O manualmente:
+   npx expo prebuild
+   cd android
+   gradlew assembleRelease
+
+Nota: También necesita Java 11
+
+==========================================
+
+🎯 RECOMENDACIÓN:
+
+USA LA OPCIÓN 1 (EAS BUILD) porque:
+✅ No necesitas instalar nada
+✅ No hay problemas de versiones de Java
+✅ Es gratuito (límite: ~30 builds/mes)
+✅ Funciona desde cualquier PC
+✅ El APK se genera en servidores potentes
+
+==========================================
+
+📱 PLAN GRATUITO DE EAS:
+
+- 30 builds por mes (Android + iOS)
+- Sin tarjeta de crédito necesaria
+- Solo necesitas crear una cuenta Expo
+
+==========================================
+
+
+

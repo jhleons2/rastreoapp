@@ -1,6 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-permission android:name="android.permission.INTERNET"/>
+  
+  <!-- ==================== PERMISOS DE UBICACIÓN GPS ==================== -->
+  <!-- Ubicación precisa (GPS) -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <!-- Ubicación aproximada (red) -->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <!-- Ubicación en segundo plano (Android 10+) -->
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+  <!-- Servicio en primer plano (Android 9+) -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <!-- ================================================================== -->
+  
   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.VIBRATE"/>

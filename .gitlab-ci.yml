@@ -1,0 +1,24 @@
+image: node:18
+
+stages:
+  - build
+
+build-android:
+  stage: build
+  before_script:
+    - apt-get update
+    - apt-get install -y openjdk-11-jdk
+    - cd mobile
+    - npm install
+  script:
+    - cd android
+    - chmod +x gradlew
+    - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - mobile/android/app/build/outputs/apk/release/app-release.apk
+    expire_in: 1 week
+  only:
+    - main
+    - master
+

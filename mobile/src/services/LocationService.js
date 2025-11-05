@@ -17,28 +17,55 @@ class LocationService {
    */
   async requestPermissions() {
     try {
+      console.log('🔐 Solicitando permisos de ubicación...');
+      
+      // Verificar permisos actuales
+      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
+      console.log('📝 Estado de permisos actual:', existingStatus);
+      
+      if (existingStatus === 'granted') {
+        console.log('✅ Permisos ya concedidos');
+        return true;
+      }
+      
       // Solicitar permisos con Expo
       const { status } = await Location.requestForegroundPermissionsAsync();
+      console.log('📝 Resultado de solicitud de permisos:', status);
       
       if (status === 'granted') {
+        console.log('✅ Permisos de primer plano concedidos');
+        
         // También solicitar permisos de fondo (solo en Android)
-        await Location.requestBackgroundPermissionsAsync();
+        try {
+          const bgPermission = await Location.requestBackgroundPermissionsAsync();
+          console.log('📝 Permisos de fondo:', bgPermission.status);
+        } catch (bgError) {
+          console.warn('⚠️ No se pudieron solicitar permisos de fondo:', bgError.message);
+          // No es crítico, continuar de todas formas
+        }
+        
         return true;
       } else if (status === 'denied') {
+        console.log('❌ Permisos denegados');
         Alert.alert(
           'Permiso Denegado',
-          'Necesitas activar los permisos de ubicación para usar esta app.'
+          'Necesitas activar los permisos de ubicación para usar esta app.\n\nVe a Configuración > Aplicaciones > RastreoApp > Permisos > Ubicación'
         );
         return false;
       } else {
+        console.log('❌ Permisos bloqueados o no disponibles');
         Alert.alert(
           'Permiso Bloqueado',
-          'Por favor, habilita los permisos de ubicación en la configuración de tu dispositivo.'
+          'Por favor, habilita los permisos de ubicación en la configuración de tu dispositivo.\n\nConfiguracion > Aplicaciones > RastreoApp > Permisos > Ubicación'
         );
         return false;
       }
     } catch (error) {
-      console.error('Error requesting permissions:', error);
+      console.error('❌ Error solicitando permisos:', error);
+      Alert.alert(
+        'Error de Permisos',
+        `No se pudieron solicitar los permisos: ${error.message}`
+      );
       return false;
     }
   }
@@ -48,21 +75,51 @@ class LocationService {
    */
   async getCurrentLocation() {
     try {
+      console.log('📍 Obteniendo ubicación actual...');
+      
+      // Verificar que los servicios de ubicación estén habilitados
+      const isEnabled = await Location.hasServicesEnabledAsync();
+      console.log('📍 Servicios de ubicación habilitados:', isEnabled);
+      
+      if (!isEnabled) {
+        Alert.alert(
+          'GPS Desactivado',
+          'Por favor, activa el GPS en tu dispositivo para continuar.'
+        );
+        throw new Error('GPS services disabled');
+      }
+      
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
+        timeout: 15000, // 15 segundos timeout
+        maximumAge: 10000, // Usar caché de máximo 10 segundos
+      });
+
+      console.log('✅ Ubicación obtenida:', {
+        lat: location.coords.latitude,
+        lon: location.coords.longitude,
+        accuracy: location.coords.accuracy,
       });
 
       return {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         accuracy: location.coords.accuracy,
-        altitude: location.coords.altitude,
-        speed: location.coords.speed,
-        heading: location.coords.heading,
+        altitude: location.coords.altitude || 0,
+        speed: location.coords.speed || 0,
+        heading: location.coords.heading || 0,
         timestamp: location.timestamp,
       };
     } catch (error) {
-      console.error('Location error:', error);
+      console.error('❌ Error obteniendo ubicación:', error.message);
+      
+      if (error.message.includes('timeout')) {
+        Alert.alert(
+          'Timeout GPS',
+          'No se pudo obtener la ubicación. Asegúrate de estar en un lugar con buena señal GPS.'
+        );
+      }
+      
       throw error;
     }
   }

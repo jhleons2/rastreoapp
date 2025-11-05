@@ -9,21 +9,26 @@
       "distribution": "internal",
       "node": "18.18.0",
       "env": {
-        "NPM_CONFIG_CACHE": "/tmp/.npm"
+        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
       }
     },
     "preview": {
       "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease",
+        "image": "latest"
+      },
       "node": "18.18.0",
       "env": {
-        "NPM_CONFIG_CACHE": "/tmp/.npm"
+        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
       }
     },
     "production": {
       "autoIncrement": true,
       "node": "18.18.0",
       "env": {
-        "NPM_CONFIG_CACHE": "/tmp/.npm"
+        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
       }
     }
   },
