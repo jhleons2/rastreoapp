@@ -1,6 +1,8 @@
-# 📍 Sistema de Rastreo Geográfico - Taller 2 Redes MCIC
+# 📍 Sistema de Rastreo Geográfico - Taller 2 Redes 2
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+**Especialización en Teleinformática - Universidad Distrital**
+
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-18.2.0-61dafb.svg)
@@ -372,7 +374,7 @@ npm run type-check
 
 ## 👥 Autores
 
-**Taller No. 2 - REDES MCIC**
+**Taller No. 2 - Redes 2**
 
 - **Jhon Helmit León Sandoval** - Código: 20141093012
 - **Jaime Andrés Parra Fajardo** - Código: 20251093001
@@ -380,13 +382,13 @@ npm run type-check
 - **David Eduardo Rojas Sánchez** - Código: 20251093006
 
 **Universidad Distrital Francisco José de Caldas**  
-**Maestría en Ciencias de la Información y las Comunicaciones (MCIC)**  
-**Curso**: Redes de Computadores  
+**Especialización en Teleinformática**  
+**Curso**: Redes 2  
 **Fecha**: Noviembre 2025
 
 ## 📄 Licencia
 
-Este proyecto es parte de un trabajo académico para el curso de Redes MCIC.
+Este proyecto es parte de un trabajo académico para el curso de Redes 2 - Especialización en Teleinformática.
 
 ## 🙏 Agradecimientos
 
@@ -418,4 +420,4 @@ Para reportar problemas o solicitar ayuda:
 
 **⭐ Si este proyecto te fue útil, no olvides darle una estrella en GitHub!**
 
-**🚀 Desarrollado con ❤️ para el curso de Redes MCIC**
+**🚀 Desarrollado con ❤️ para Redes 2 - Especialización en Teleinformática**

@@ -350,9 +350,12 @@ Funcionalidades sugeridas para próximas versiones:
 
 ## 🙏 Créditos
 
-**Desarrollado por**: Equipo RastreoApp  
+**Desarrollado por**: Equipo Taller 2 - Redes 2  
+**Universidad**: Universidad Distrital Francisco José de Caldas  
+**Especialización**: Teleinformática  
 **Fecha**: Noviembre 5, 2025  
 **Versión**: 1.1.0  
+
 **Librerías utilizadas**:
 - Recharts (https://recharts.org/)
 - Lucide React (https://lucide.dev/)

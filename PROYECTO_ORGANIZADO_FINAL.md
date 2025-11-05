@@ -329,11 +329,12 @@ Lee: **docs/ARQUITECTURA.md**
 ## 📞 Información del Proyecto
 
 ### Proyecto Académico
-- **Universidad**: [Tu Universidad]
-- **Curso**: Redes de Computadores MCIC
-- **Taller**: Taller 2
+- **Universidad**: Universidad Distrital Francisco José de Caldas
+- **Programa**: Especialización en Teleinformática
+- **Curso**: Redes 2
+- **Taller**: Taller No. 2
 - **Fecha**: Noviembre 2025
-- **Estudiante**: [Tu Nombre]
+- **Equipo**: 4 integrantes
 
 ### Repositorio
 - **GitHub**: [Tu repositorio]
@@ -341,7 +342,8 @@ Lee: **docs/ARQUITECTURA.md**
 - **Documentación**: carpeta `docs/`
 
 ### Contacto
-- **Email**: [tu-email@universidad.edu]
+- **Universidad**: Universidad Distrital Francisco José de Caldas
+- **Especialización**: Teleinformática
 - **Issues**: GitHub Issues
 - **Documentación**: Ver `docs/README.md`
 
